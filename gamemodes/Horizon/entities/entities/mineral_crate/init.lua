@@ -24,13 +24,13 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS ) 
 		
 	self.maxMorphite = 500
-	self.Morphite = 500
+	self.Morphite = 0
 	
 	self.maxNocxium = 500
-	self.Nocxium = 500	
+	self.Nocxium = 0
 	
 	self.maxIsogen = 500
-	self.Isogen = 500
+	self.Isogen = 0
 	
         local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
