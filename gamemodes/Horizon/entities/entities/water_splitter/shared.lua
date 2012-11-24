@@ -1,0 +1,1 @@
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Water Splitter"ENT.Author			= "Bynari"ENT.AutomaticFrameAdvance = true  

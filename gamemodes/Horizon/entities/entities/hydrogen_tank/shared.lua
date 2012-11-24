@@ -1,0 +1,1 @@
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Hydrogen Tank"ENT.Author			= "Bynari"ENT.Purpose			= "Hydrogen Storage" 

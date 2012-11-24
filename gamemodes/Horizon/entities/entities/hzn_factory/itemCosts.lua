@@ -1,0 +1,1 @@
+self.gwExtractor = {}--Required Morphite, Nocxium & Isogen, respectively.self.gwExtractor[1] = 10self.gwExtractor[2] = 10self.gwExtractor[3] = 0

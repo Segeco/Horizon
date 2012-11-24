@@ -1,0 +1,1 @@
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Hydrogen Coolant Compressor"ENT.Author			= "Bynari" 

@@ -1,0 +1,7 @@
+"Horizon"
+{
+	"base"		"base"
+	"title"		"Horizon"
+	"maps"		"^hzn_"
+	"menusystem"	"1"
+}
