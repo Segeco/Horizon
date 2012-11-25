@@ -462,9 +462,7 @@ function ENT:Think()
 	-- generate/consume resources if active
 	
 	
-	-- update the panel	
-	self:devUpdate()
-			
+					
 	self.Entity:NextThink( CurTime() )
 	return true	
     

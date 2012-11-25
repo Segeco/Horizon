@@ -16,7 +16,7 @@ end
  
 function ENT:Initialize()
  
-	self:SetModel( "models/props_junk/plasticbucket001a.mdl" )
+	self:SetModel( "models/link_hub.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )      
 	self:SetMoveType( MOVETYPE_VPHYSICS )   
 	self:SetSolid( SOLID_VPHYSICS ) 

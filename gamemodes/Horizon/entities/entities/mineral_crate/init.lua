@@ -27,7 +27,7 @@ function ENT:Initialize()
 	self.Morphite = 0
 	
 	self.maxNocxium = 500
-	self.Nocxium = 0
+	self.Nocxium = 0	
 	
 	self.maxIsogen = 500
 	self.Isogen = 0

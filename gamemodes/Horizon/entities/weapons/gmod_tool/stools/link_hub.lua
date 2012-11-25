@@ -11,7 +11,7 @@ if ( CLIENT ) then
 	language.Add( "Tool.link_hub.0", "Left Click to place hub" );
 end
 
-local entityModel = "models/props_junk/plasticbucket001a.mdl"
+local entityModel = "models/link_hub.mdl"
 
 
 function TOOL:LeftClick( trace )

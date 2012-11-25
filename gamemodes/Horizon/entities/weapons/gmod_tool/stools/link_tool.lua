@@ -36,7 +36,20 @@ function TOOL:LeftClick( tr )
 		
 		end
 		
+			
+
+				
+		if entA:GetPos():Distance( tr.Entity:GetPos() ) > 800 then
 		
+			timesFired = 0
+			cycleComplete = false
+			cycleHasrun = true
+			self:ClearObjects()
+			return true
+		
+		end
+		
+		-------------- rope code---------
 		local iNum = self:NumObjects()
 		
 		local Phys = tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone )
@@ -75,6 +88,8 @@ function TOOL:LeftClick( tr )
 				
  	
 		end
+		
+		---------------------------------
 		
 		
 		if (tr.Entity != entA) then
@@ -275,6 +290,9 @@ function TOOL:Reload( tr )
 
 	return true
 	
+end
+
+function TOOL:AddCable(Ent1, Ent2)
 end
 
 
