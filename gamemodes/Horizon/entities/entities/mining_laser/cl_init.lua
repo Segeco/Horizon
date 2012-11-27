@@ -22,6 +22,8 @@ function ENT:Draw()
 		render.DrawBeam( Vector1, Vector2, 5, 1, 1, Color( 255, 255, 255, 255 ) ) 
 		
 	end
+	
+	Wire_Render(self.Entity)
  
 
 end

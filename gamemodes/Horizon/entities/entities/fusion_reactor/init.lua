@@ -45,7 +45,13 @@ function ENT:Initialize()
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
-	end	
+	end
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Inputs = Wire_CreateInputs(self, { "On" })
+        self.Outputs = Wire_CreateOutputs(self, { "Active" })
+    end
     
 end
 
@@ -86,6 +92,16 @@ function ENT:deviceTurnOff()
 	self.Active = false
 		
 
+end
+
+function ENT:TriggerInput(iname, value)
+    if (iname == "On") then
+        if (value ~= 1) then
+            self:deviceTurnOff()
+        else
+            self:deviceTurnOn()
+        end
+    end
 end
 
    
@@ -153,6 +169,11 @@ function ENT:Think()
 		self:resourceExchange()
 	end	
 	
+	-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
+	
 	-- update the status balloon	
 	self:devUpdate()
 	
@@ -167,5 +188,18 @@ function ENT:devUpdate()
 	umsg.Short( self.availableHydrogen )
 	umsg.Short( self.availableCoolant )
 	umsg.End()
+end
+
+function ENT:UpdateWireOutput()
+	local activity
+	
+	if (self.Active ~= true) then
+		activity = 0
+	else
+		activity = 1
+	end
+	
+    Wire_TriggerOutput(self, "Active", activity)
+        
 end
  

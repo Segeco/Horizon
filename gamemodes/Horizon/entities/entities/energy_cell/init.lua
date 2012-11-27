@@ -34,6 +34,11 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Outputs = Wire_CreateOutputs(self, { "Energy In Cell", "Total Energy" })
+    end
 end
  
 function ENT:Think()
@@ -55,6 +60,24 @@ function ENT:Think()
 	if self.networkID == nil then
 		self:resetResources()
 	end
+	
+		-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
+	
+end
+
+function ENT:UpdateWireOutput()
+	local cellEnergy
+	local networkEnergy
+	
+	cellEnergy = self.energy
+	networkEnergy = self.totalEnergy	
+	
+    Wire_TriggerOutput(self, "Energy In Cell", cellEnergy)
+    Wire_TriggerOutput(self, "Total Energy", networkEnergy )
+  
 end
 
 function ENT:trimResources()

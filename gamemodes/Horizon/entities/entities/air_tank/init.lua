@@ -27,6 +27,7 @@ function ENT:Initialize()
 	self.deviceType = "storage"
 	self.maxAir = 1200
 	self.Air = 0
+	self.venting = false
 	self.totalAir = self.Air
 	self.resourcesUsed = {"air"}
 
@@ -34,8 +35,13 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Outputs = Wire_CreateOutputs(self, { "Air In Tank", "Total Air" })
+    end
 end
- 
+
  
 function ENT:Think()
 
@@ -54,6 +60,11 @@ function ENT:Think()
 			
 		end
 	end
+	
+	-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
 	
 	if self.networkID == nil then
 		self:resetResources()
@@ -96,6 +107,18 @@ function ENT:reportResources( netID )
 		end
 	end
 
+end
+
+function ENT:UpdateWireOutput()
+	local tankAir
+	local networkAir
+	
+	tankAir = self.Air
+	networkAir = self.totalAir	
+	
+    Wire_TriggerOutput(self, "Air In Tank", tankAir)
+    Wire_TriggerOutput(self, "Total Air", networkAir )
+  
 end
 
 function ENT:devUpdate()

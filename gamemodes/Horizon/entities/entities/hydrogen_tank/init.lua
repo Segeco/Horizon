@@ -34,6 +34,12 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Outputs = Wire_CreateOutputs(self, { "Hydrogen In Tank", "Total Hydrogen" })
+    end
+	
 end
  
  
@@ -54,10 +60,27 @@ function ENT:Think()
 		end
 	end
 	
+	-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
+	
 	if self.networkID == nil then
 		self:resetResources()
 	end
     
+end
+
+function ENT:UpdateWireOutput()
+	local tankHydrogen
+	local networkHydrogen
+	
+	tankHydrogen = self.Hydrogen
+	networkHydrogen = self.totalHydrogen	
+	
+    Wire_TriggerOutput(self, "Hydrogen In Tank", tankHydrogen)
+    Wire_TriggerOutput(self, "Total Hydrogen", networkHydrogen )
+  
 end
 
 function ENT:trimResources()

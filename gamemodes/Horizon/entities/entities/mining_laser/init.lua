@@ -40,6 +40,12 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end	
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Inputs = Wire_CreateInputs(self, { "On" })
+        self.Outputs = Wire_CreateOutputs(self, { "Active" })
+    end
     
 end
 
@@ -71,6 +77,16 @@ local function deviceTurnOff(ply, ent)
 	ent.Active = false
 
 
+end
+
+function ENT:TriggerInput(iname, value)
+    if (iname == "On") then
+        if (value ~= 1) then
+            self:deviceTurnOff()
+        else
+            self:deviceTurnOn()
+        end
+    end
 end
 
    
@@ -149,6 +165,11 @@ function ENT:Think()
 				
 	end	
 	
+	-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
+	
 	
 	
 	self:devUpdate()
@@ -169,5 +190,18 @@ end
 
 numpad.Register( "lsr_active", deviceTurnOn ) 
 numpad.Register( "lsr_inactive", deviceTurnOff )
+
+function ENT:UpdateWireOutput()
+	local activity
+	
+	if (self.Active ~= true) then
+		activity = 0
+	else
+		activity = 1
+	end
+	
+    Wire_TriggerOutput(self, "Active", activity)
+        
+end
 
  

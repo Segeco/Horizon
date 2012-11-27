@@ -41,6 +41,12 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Outputs = Wire_CreateOutputs(self, { "Morphite In Tank", "Total Morphite", "Nocxium In Tank", "Total Nocxium", "Isogen In Tank", "Total Isogen" })
+    end
+	
 end
  
 function ENT:Think()
@@ -65,10 +71,39 @@ function ENT:Think()
 		end
 	end
 	
+	-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
+	
 	if self.networkID == nil then
 		self:resetResources()
 	end
     
+end
+
+function ENT:UpdateWireOutput()
+	local tankMorphite
+	local networkMorphite
+	local tankNocxium
+	local networkNocxium
+	local tankIsogen
+	local networkIsogen
+	
+	tankMorphite = self.Morphite
+	networkMorphite = self.totalMorphite
+	tankNocxium = self.Nocxium
+	networkNocxium = self.totalNocxium
+	tankIsogen = self.Isogen
+	networkIsogen = self.totalIsogen
+	
+    Wire_TriggerOutput(self, "Morphite In Tank", tankMorphite)
+    Wire_TriggerOutput(self, "Total Morphite", networkMorphite )
+	Wire_TriggerOutput(self, "Nocxium In Tank", tankNocxium)
+    Wire_TriggerOutput(self, "Total Nocxium", networkNocxium )
+	Wire_TriggerOutput(self, "Isogen In Tank", tankIsogen)
+    Wire_TriggerOutput(self, "Total Isogen", networkIsogen )
+  
 end
 
 function ENT:trimResources()

@@ -34,6 +34,12 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+	
+	if not (WireAddon == nil) then
+        self.WireDebugName = self.PrintName
+        self.Outputs = Wire_CreateOutputs(self, { "Coolant In Tank", "Total Coolant" })
+    end
+	
 end
  
 function ENT:Think()
@@ -56,8 +62,25 @@ function ENT:Think()
 		self:resetResources()
 	end
 	
+	-- Update the wire outputs, DUH!
+	if not (WireAddon == nil) then
+        self:UpdateWireOutput()
+    end
+	
 
     
+end
+
+function ENT:UpdateWireOutput()
+	local tankCoolant
+	local networkCoolant
+	
+	tankCoolant = self.coolant
+	networkCoolant = self.totalCoolant	
+	
+    Wire_TriggerOutput(self, "Coolant In Tank", tankCoolant)
+    Wire_TriggerOutput(self, "Total Coolant", networkCoolant )
+  
 end
 
 function ENT:trimResources()
@@ -68,7 +91,7 @@ end
 
 function ENT:resetResources()
 
-	self.totalCoolant = self.Coolant
+	self.totalCoolant = self.coolant
 
 end
 

@@ -23,6 +23,7 @@ function ENT:Draw( )
 	end
 
 	self:DrawModel();
+	Wire_Render(self.Entity)
 
 end
 

@@ -106,7 +106,6 @@ function TOOL:LeftClick( tr )
 			
 									
 					entA.networkID = GAMEMODE.nextNet
-
 					table.insert(entA.connections, entB)
 					
 			
