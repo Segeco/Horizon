@@ -18,19 +18,19 @@ function GM:InitPostEntity()
 end
 
 
-function GM:PlayerSpawn(ply)
+function GM:PlayerSpawn( ply )
 
 	self.BaseClass:PlayerSpawn(ply)
 	
 	-- Assign default suit values
 	ply.suitAir = 0
-	ply.maxAir = 100
+	ply.maxAir = 200
 	
 	ply.suitCoolant = 0
-	ply.maxCoolant = 100
+	ply.maxCoolant = 200
 	
 	ply.suitPower = 0
-	ply.maxPower = 100
+	ply.maxPower = 200
 	
 	self:SuitUpdate(ply)
 	
@@ -70,7 +70,7 @@ function GM:compareEnv(env, curEnv)
 	local env2 = curEnv.dt.Priority
 	
 	if env2 < env1 then
-		return false
+		return true
 	end
 	
 	return true
@@ -122,16 +122,38 @@ function GM:adjGravity( ent, env)
 	else
 	
 	if gravity > 0 then
-	
-		ent:GetPhysicsObject():EnableGravity(true)
-		ent:GetPhysicsObject():EnableDrag(true)
+		
+		if ent:GetPhysicsObjectCount() then
+			local i = 0
+			while i < ent:GetPhysicsObjectCount() do
+			 
+			    physobs = ent:GetPhysicsObjectNum(i)
+			    physobs:EnableGravity(true)
+				physobs:EnableDrag(true)
+			    i = i + 1
+			end
+		elseif (ent:IsValid()) then
+			ent:GetPhysicsObject():EnableGravity(true)
+			ent:GetPhysicsObject():EnableDrag(true)
+		end
 	
 	end
 	
 	if gravity == 0 then
 	
-		ent:GetPhysicsObject():EnableGravity(false)
-		ent:GetPhysicsObject():EnableDrag(false)
+		if ent:GetPhysicsObjectCount() then
+			local i = 0
+			while i < ent:GetPhysicsObjectCount() do
+			 
+			    physobs = ent:GetPhysicsObjectNum(i)
+			    physobs:EnableGravity(false)
+				physobs:EnableDrag(false)
+			    i = i + 1
+			end
+		elseif (ent:IsValid()) then
+			ent:GetPhysicsObject():EnableGravity(false)
+			ent:GetPhysicsObject():EnableDrag(false)
+		end
 	
 	end	
 	
@@ -150,13 +172,17 @@ function GM:setDefaultEnv(ent)
 		ent:SetGravity(.0000001)
 			
 	else
-	
-	ent:GetPhysicsObject():EnableGravity(false)
-	ent:GetPhysicsObject():EnableDrag(false)
+		
+		local i = 0
+		while i < ent:GetPhysicsObjectCount() do
+		 
+		    physobs = ent:GetPhysicsObjectNum(i)
+		    physobs:EnableGravity(false)
+			physobs:EnableDrag(false)
+		    i = i + 1
+		end
 		
 	end
-	
-	
 	
 end
 
@@ -265,7 +291,7 @@ function GM:consumeResource(netID, resName, amt)
 	
 	end
 	
-	--Update amount on the registered table, find out how much to send to individual tanks
+	--Update amount on the registered table, find out how much to pull from individual tanks
 	
 	for _, res in pairs( self.networks[netID][1] ) do
 	
@@ -674,11 +700,10 @@ function GM:Think()
 						
 						
 			if !ply.Habitable and ply:Alive() then			
-						
+				
 				if ply.suitAir > 0 then				
 				
 					ply.suitAir = ply.suitAir - 1
-				
 			
 				end
 			
@@ -736,6 +761,16 @@ function GM:Think()
 	
 
 end
+
+--Debug functions
+
+function debugMode( client, command, arguments )
+     client.suitAir = 200
+	 client.suitPower = 200
+	 client.suitCoolant = 200
+end
+
+concommand.Add( "hzndebug", debugMode )
 
 
 

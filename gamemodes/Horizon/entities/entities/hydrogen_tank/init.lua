@@ -78,8 +78,8 @@ function ENT:UpdateWireOutput()
 	tankHydrogen = self.Hydrogen
 	networkHydrogen = self.totalHydrogen	
 	
-    Wire_TriggerOutput(self, "Hydrogen In Tank", tankHydrogen)
-    Wire_TriggerOutput(self, "Total Hydrogen", networkHydrogen )
+    Wire_TriggerOutput(self, "Hydrogen In Tank", math.Round( tankHydrogen ) )
+    Wire_TriggerOutput(self, "Total Hydrogen", math.Round( networkHydrogen ) )
   
 end
 
@@ -99,7 +99,7 @@ function ENT:updateResCount(resName, newAmt)
 
 	if resName == "hydrogen" then
 	
-		if self.Hydrogen < self.maxHydrogen then
+		if self.Hydrogen <= self.maxHydrogen then
 			self.Hydrogen = newAmt
 		end
 	

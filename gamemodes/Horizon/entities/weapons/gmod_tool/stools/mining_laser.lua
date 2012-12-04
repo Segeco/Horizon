@@ -55,6 +55,7 @@ if ( not trace.HitPos ) then return false; end
 		undo.AddEntity( laser );
 		undo.AddEntity( const );
 		undo.SetPlayer( ply );
+		undo.SetCustomUndoText("Undone Mining Laser")
 	undo.Finish();
 
 	ply:AddCleanup( "mining lasers", laser );

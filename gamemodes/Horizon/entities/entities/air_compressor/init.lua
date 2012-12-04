@@ -201,3 +201,15 @@ function ENT:UpdateWireOutput()
     Wire_TriggerOutput(self, "Active", activity)
         
 end
+
+function ENT:OnRemove()
+
+	if self.Active then
+
+		self.Entity:StopSound( "Airboat_engine_idle" )
+		self.Entity:EmitSound( "Airboat_engine_stop" )
+		self.Entity:StopSound( "apc_engine_start" )
+
+	end
+
+end

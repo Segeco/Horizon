@@ -89,7 +89,7 @@ function ENT:updateResCount(resName, newAmt)
 
 	if resName == "air" then
 	
-		if self.Air < self.maxAir then
+		if self.Air <= self.maxAir then
 			self.Air = newAmt
 		end
 	
@@ -116,8 +116,8 @@ function ENT:UpdateWireOutput()
 	tankAir = self.Air
 	networkAir = self.totalAir	
 	
-    Wire_TriggerOutput(self, "Air In Tank", tankAir)
-    Wire_TriggerOutput(self, "Total Air", networkAir )
+    Wire_TriggerOutput(self, "Air In Tank", math.Round( tankAir ) )
+    Wire_TriggerOutput(self, "Total Air", math.Round( networkAir ) )
   
 end
 

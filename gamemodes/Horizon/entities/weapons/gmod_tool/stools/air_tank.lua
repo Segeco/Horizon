@@ -51,6 +51,7 @@ if ( not trace.HitPos ) then return false; end
 		undo.AddEntity( createdEntity );
 		undo.AddEntity( const );
 		undo.SetPlayer( ply );
+		undo.SetCustomUndoText("Undone Air Tank")
 	undo.Finish();
 
 	ply:AddCleanup( "air tanks", createdEntity );

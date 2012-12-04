@@ -288,4 +288,15 @@ function ENT:UpdateWireOutput()
     Wire_TriggerOutput(self, "Active", activity)
         
 end
- 
+
+function ENT:OnRemove()
+
+	if self.Active then
+
+		self.Entity:StopSound( "trainyard.train_move" )
+		self.Entity:StopSound( "trainyard.train_idle" )
+		self.Entity:EmitSound( "trainyard.train_brake" )
+
+	end
+
+end

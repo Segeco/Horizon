@@ -79,8 +79,8 @@ function ENT:UpdateWireOutput()
 	tankWater = self.Water
 	networkWater = self.totalWater	
 	
-    Wire_TriggerOutput(self, "Water In Tank", tankWater)
-    Wire_TriggerOutput(self, "Total Water", networkWater )
+    Wire_TriggerOutput(self, "Water In Tank", math.Round( tankWater ) )
+    Wire_TriggerOutput(self, "Total Water", math.Round( networkWater ) )
   
 end
 
@@ -100,7 +100,7 @@ function ENT:updateResCount(resName, newAmt)
 
 	if resName == "water" then
 	
-		if self.Water < self.maxWater then
+		if self.Water <= self.maxWater then
 			self.Water = newAmt
 		end
 	
@@ -121,8 +121,8 @@ function ENT:reportResources( netID )
 end
 
 function ENT:devUpdate()
-	umsg.Start("water_tank_umsg")
-	umsg.Entity(self)
+	umsg.Start( "water_tank_umsg" )
+	umsg.Entity( self )
 	umsg.Short( self.totalWater )
 	umsg.End()
 end

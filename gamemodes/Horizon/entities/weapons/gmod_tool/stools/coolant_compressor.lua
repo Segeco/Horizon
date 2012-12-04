@@ -51,6 +51,7 @@ if ( not trace.HitPos ) then return false; end
 		undo.AddEntity( createdEntity );
 		undo.AddEntity( const );
 		undo.SetPlayer( ply );
+		undo.SetCustomUndoText("Undone Coolant Compressor")
 	undo.Finish();
 
 	ply:AddCleanup( "coolant compressors", createdEntity );

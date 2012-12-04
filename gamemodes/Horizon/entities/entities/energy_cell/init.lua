@@ -52,7 +52,7 @@ function ENT:Think()
 	if self.networkID != nil then	
 		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
 			if res[1] == "energy" then	
-				self.totalEnergy = res[2]			
+				self.totalEnergy = res[2]
 			end			
 		end
 	end
@@ -69,14 +69,9 @@ function ENT:Think()
 end
 
 function ENT:UpdateWireOutput()
-	local cellEnergy
-	local networkEnergy
-	
-	cellEnergy = self.energy
-	networkEnergy = self.totalEnergy	
-	
-    Wire_TriggerOutput(self, "Energy In Cell", cellEnergy)
-    Wire_TriggerOutput(self, "Total Energy", networkEnergy )
+		
+    Wire_TriggerOutput(self, "Energy In Cell", math.Round( self.energy ) )
+    Wire_TriggerOutput(self, "Total Energy", math.Round( self.totalEnergy ) )
   
 end
 
@@ -96,7 +91,7 @@ function ENT:updateResCount(resName, newAmt)
 
 	if resName == "energy" then
 	
-		if self.energy < self.maxEnergy then
+		if self.energy <= self.maxEnergy then
 			self.energy = newAmt
 		end
 	

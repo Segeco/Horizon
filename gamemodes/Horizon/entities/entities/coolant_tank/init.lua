@@ -78,8 +78,8 @@ function ENT:UpdateWireOutput()
 	tankCoolant = self.coolant
 	networkCoolant = self.totalCoolant	
 	
-    Wire_TriggerOutput(self, "Coolant In Tank", tankCoolant)
-    Wire_TriggerOutput(self, "Total Coolant", networkCoolant )
+    Wire_TriggerOutput(self, "Coolant In Tank", math.Round( tankCoolant ) )
+    Wire_TriggerOutput(self, "Total Coolant", math.Round( networkCoolant ) )
   
 end
 
@@ -99,7 +99,7 @@ function ENT:updateResCount(resName, newAmt)
 
 	if resName == "coolant" then
 	
-		if self.coolant < self.maxCoolant then
+		if self.coolant <= self.maxCoolant then
 			self.coolant = newAmt
 		end
 	

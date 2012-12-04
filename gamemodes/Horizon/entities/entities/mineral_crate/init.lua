@@ -32,10 +32,12 @@ function ENT:Initialize()
 	self.maxIsogen = 500
 	self.Isogen = 0
 	
-        local phys = self:GetPhysicsObject()
+    local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
 	end
+
+	
 end
  
 function ENT:Think()
@@ -45,8 +47,9 @@ function ENT:Think()
 	self:devUpdate()
 	self:trimResources()
 	
-	    
+			    
 end
+
 
 function ENT:StartTouch( hitEnt )
  

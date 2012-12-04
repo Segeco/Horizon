@@ -97,12 +97,12 @@ function ENT:UpdateWireOutput()
 	tankIsogen = self.Isogen
 	networkIsogen = self.totalIsogen
 	
-    Wire_TriggerOutput(self, "Morphite In Tank", tankMorphite)
-    Wire_TriggerOutput(self, "Total Morphite", networkMorphite )
-	Wire_TriggerOutput(self, "Nocxium In Tank", tankNocxium)
-    Wire_TriggerOutput(self, "Total Nocxium", networkNocxium )
-	Wire_TriggerOutput(self, "Isogen In Tank", tankIsogen)
-    Wire_TriggerOutput(self, "Total Isogen", networkIsogen )
+    Wire_TriggerOutput(self, "Morphite In Tank", math.Round( tankMorphite ) )
+    Wire_TriggerOutput(self, "Total Morphite", math.Round( networkMorphite ) )
+	Wire_TriggerOutput(self, "Nocxium In Tank", math.Round( tankNocxium ) )
+    Wire_TriggerOutput(self, "Total Nocxium", math.Round( networkNocxium ) )
+	Wire_TriggerOutput(self, "Isogen In Tank", math.Round( tankIsogen ) )
+    Wire_TriggerOutput(self, "Total Isogen", math.Round( networkIsogen ) )
   
 end
 

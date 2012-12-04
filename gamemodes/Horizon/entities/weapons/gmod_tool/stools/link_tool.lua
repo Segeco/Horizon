@@ -3,6 +3,8 @@ TOOL.Name = "Link Tool"
 TOOL.Command = nil
 TOOL.ConfigName = ""
 TOOL.Tab = "Horizon"
+TOOL.ClientConVar[ "width" ] = "1.5"
+TOOL.ClientConVar[ "material" ] = "cable/cable"
 
 if ( CLIENT ) then
     language.Add( "Tool.link_tool.name", "Link Tool" );
@@ -59,8 +61,8 @@ function TOOL:LeftClick( tr )
 		
                 local forcelimit = 0
                 local addlength  = 100
-                local material   = "cable/cable"
-                local width      = 2
+                local material   = self:GetClientInfo( "material" )
+                local width      = self:GetClientNumber( "width" ) or 1.5
                 local rigid      = false
                
                 // Get information we're about to use
@@ -294,5 +296,17 @@ end
 function TOOL:AddCable(Ent1, Ent2)
 end
 
-
+function TOOL.BuildCPanel( CPanel )
+	CPanel:AddControl( "ComboBox", 
+	{ 
+		Label = "#tool.presets",
+		MenuButton = 1,
+		Folder = "link",
+		Options =	{ Default = {	link_tool_width='1',	link_tool_material='cable/cable' } },
+		CVars =		{				"link_tool_width",		"link_tool_material" } 
+	})
+	CPanel:AddControl( "Slider", 		{ Label = "Width",		Type = "Float", 	Command = "link_tool_width", 		Min = "0", 	Max = "10" }  )
+	CPanel:AddControl( "RopeMaterial", 	{ Label = "Link Material",	convar	= "link_tool_material" }  )
+									
+end
 
