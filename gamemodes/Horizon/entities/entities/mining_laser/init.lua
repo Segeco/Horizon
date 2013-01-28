@@ -4,6 +4,7 @@ AddCSLuaFile( "shared.lua" )
 util.PrecacheSound( "d3_citadel.weapon_zapper_beam_loop2" )
  
 include('shared.lua')
+util.AddNetworkString( "netMiningLas" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -63,28 +64,26 @@ end
 
 local function deviceTurnOn(ply, ent)
 	
-	ent.Entity:EmitSound( "d3_citadel.weapon_zapper_beam_loop2" )
-	
 	ent.Active = true
 		
-
+	ent:EmitSound( "d3_citadel.weapon_zapper_beam_loop2" )
+	
 end
 
 local function deviceTurnOff(ply, ent)
-
-	ent.Entity:StopSound( "d3_citadel.weapon_zapper_beam_loop2" )
-		
+	
 	ent.Active = false
 
-
+	ent:StopSound( "d3_citadel.weapon_zapper_beam_loop2" )
+	
 end
 
 function ENT:TriggerInput(iname, value)
     if (iname == "On") then
         if (value ~= 1) then
-            self:deviceTurnOff()
+            deviceTurnOff( nil, self )
         else
-            self:deviceTurnOn()
+            deviceTurnOn( nil, self )
         end
     end
 end
@@ -181,11 +180,12 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("mining_laser_umsg")
-	umsg.Entity(self)
-	umsg.Bool( self.Active )
-	umsg.Vector ( self.targetPos )
-	umsg.End()
+	net.Start( "netMiningLas" )
+		net.WriteEntity( self )
+		net.WriteBit( self.Active )
+		net.WriteVector( self.targetPos )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 numpad.Register( "lsr_active", deviceTurnOn ) 

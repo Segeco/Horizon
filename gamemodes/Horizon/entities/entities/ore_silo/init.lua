@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netOreSilo" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -28,12 +29,15 @@ function ENT:Initialize()
 	
 	self.maxMorphite = 10000
 	self.Morphite = 0	
+	self.totalMorphite = self.Morphite	
 	
 	self.maxNocxium = 10000
 	self.Nocxium = 0	
+	self.totalNocxium = self.Nocxium	
 	
 	self.maxIsogen = 10000
 	self.Isogen = 0	
+	self.totalIsogen = self.Isogen	
 	
 	self.resourcesUsed = {"morphite", "nocxium", "isogen"}				
 	
@@ -90,19 +94,19 @@ function ENT:UpdateWireOutput()
 	local tankIsogen
 	local networkIsogen
 	
-	tankMorphite = self.Morphite
-	networkMorphite = self.totalMorphite
-	tankNocxium = self.Nocxium
-	networkNocxium = self.totalNocxium
-	tankIsogen = self.Isogen
-	networkIsogen = self.totalIsogen
+	tankMorphite = math.Round( self.Morphite )
+	networkMorphite = math.Round( self.totalMorphite )
+	tankNocxium = math.Round( self.Nocxium )
+	networkNocxium = math.Round( self.totalNocxium )
+	tankIsogen = math.Round( self.Isogen )
+	networkIsogen = math.Round( self.totalIsogen )
 	
-    Wire_TriggerOutput(self, "Morphite In Tank", math.Round( tankMorphite ) )
-    Wire_TriggerOutput(self, "Total Morphite", math.Round( networkMorphite ) )
-	Wire_TriggerOutput(self, "Nocxium In Tank", math.Round( tankNocxium ) )
-    Wire_TriggerOutput(self, "Total Nocxium", math.Round( networkNocxium ) )
-	Wire_TriggerOutput(self, "Isogen In Tank", math.Round( tankIsogen ) )
-    Wire_TriggerOutput(self, "Total Isogen", math.Round( networkIsogen ) )
+    Wire_TriggerOutput(self, "Morphite In Tank", tankMorphite )
+    Wire_TriggerOutput(self, "Total Morphite", networkMorphite )
+	Wire_TriggerOutput(self, "Nocxium In Tank", tankNocxium )
+    Wire_TriggerOutput(self, "Total Nocxium", networkNocxium )
+	Wire_TriggerOutput(self, "Isogen In Tank", tankIsogen )
+    Wire_TriggerOutput(self, "Total Isogen", networkIsogen )
   
 end
 
@@ -173,12 +177,25 @@ function ENT:reportResources( netID )
 end
 
 function ENT:devUpdate()
-	umsg.Start("silo_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.totalMorphite )
-	umsg.Short( self.totalNocxium )
-	umsg.Short( self.totalIsogen )
-	umsg.End()
+	local Content = {
+		Morphite = {
+			amount = self.Morphite,
+			max = self.maxMorphite
+		},
+		Nocxium = {
+			amount = self.Nocxium,
+			max = self.maxNocxium
+		},
+		Isogen = {
+			amount = self.Isogen,
+			max = self.maxIsogen
+		}
+	}
+	net.Start( "netOreSilo" )
+		net.WriteEntity( self )
+		net.WriteTable( Content )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 

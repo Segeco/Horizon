@@ -107,6 +107,21 @@ function VGUI:Init()
 	fusionReactor[12] = "[100] Nocxium"
 	fusionReactor[13] = "[0] Isogen"
 	
+	gravityGenerator = {}
+	gravityGenerator[1] = "Gravity Generator"
+	gravityGenerator[2] = "----------------------"
+	gravityGenerator[3] = "Uses energy to create a small, localized gravity feild.  It"
+	gravityGenerator[4] = "uses energy."
+	gravityGenerator[5] = ""
+	gravityGenerator[6] = ""
+	gravityGenerator[7] = "Consumes ENERGY"
+	gravityGenerator[8] = ""
+	gravityGenerator[9] = "Required resources:"
+	gravityGenerator[10] = ""
+	gravityGenerator[11] = "[100] Morphite"
+	gravityGenerator[12] = "[100] Nocxium"
+	gravityGenerator[13] = "[0] Isogen"
+	
 
 	local FactoryMenu = vgui.Create( "DFrame" )
 	FactoryMenu:SetPos( 50,50 )
@@ -131,6 +146,7 @@ function VGUI:Init()
 		schematicBox:AddLine("Hydrogen Coolant Proc.")
 		schematicBox:AddLine("Remote Suitcharger")
 		schematicBox:AddLine("Fusion Reactor")
+		schematicBox:AddLine("Gravity Generator")
 	
 	-------------------
 		
@@ -174,6 +190,12 @@ function VGUI:Init()
 		if selectedValue == "Remote Suitcharger" then
 		
 			itemDesc = remoteSuitcharger
+		
+		end
+		
+		if selectedValue == "Gravity Generator" then
+		
+			itemDesc = gravityGenerator
 		
 		end
 		

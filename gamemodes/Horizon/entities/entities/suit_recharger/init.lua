@@ -3,6 +3,7 @@ AddCSLuaFile( "shared.lua" )
 util.PrecacheSound( "Airboat_engine_idle" )
  
 include('shared.lua')
+util.AddNetworkString( "netSuitRecharger" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -25,8 +26,11 @@ function ENT:Initialize()
 	self:SetUseType( ONOFF_USE )
 	
 	self.dispEnergy = 0
+	self.dispStorableEnergy = 0
 	self.dispAir = 0
+	self.dispStorableAir = 0
 	self.dispCoolant = 0
+	self.dispStorableCoolant = 0
 	
 	self.linkable = true
 	self.connections = {}
@@ -148,9 +152,6 @@ end
 
    
 function ENT:Think()
-
-			
-self:devUpdate()
 	
 	if self.networkID != nil then
 	
@@ -158,19 +159,22 @@ self:devUpdate()
 			
 			if res[1] == "energy" then
 			
-				self.dispEnergy = res[2]				
+				self.dispEnergy = res[2]
+				self.dispStorableEnergy = res[3]				
 		
 			end
 			
 			if res[1] == "air" then
 			
-				self.dispAir = res[2]				
+				self.dispAir = res[2]
+				self.dispStorableAir = res[3]
 		
 			end
 			
 			if res[1] == "coolant" then
 			
-				self.dispCoolant = res[2]				
+				self.dispCoolant = res[2]
+				self.dispStorableCoolant = res[3]			
 		
 			end
 		end
@@ -178,13 +182,16 @@ self:devUpdate()
 	end
 	
 	if self.networkID == nil then
-	
-	self.dispEnergy = 0
-	self.dispAir = 0
-	self.dispCoolant = 0
-	
+		self.dispEnergy = 0
+		self.dispStorableEnergy = 0
+		self.dispAir = 0
+		self.dispStorableAir = 0
+		self.dispCoolant = 0
+		self.dispStorableCoolant = 0
 	end
 	
+	self:devUpdate()
+
 	self.Entity:NextThink( CurTime() + 1 )
 	return true	
 	
@@ -198,11 +205,15 @@ function ENT:OnRemove()
 end
 
 function ENT:devUpdate()
-	umsg.Start("suit_recharger_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.dispEnergy )
-	umsg.Short( self.dispAir )
-	umsg.Short( self.dispCoolant )
-	umsg.End()
+	net.Start( "netSuitRecharger" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.dispEnergy )
+		net.WriteFloat( self.dispStorableEnergy )
+		net.WriteFloat( self.dispAir )
+		net.WriteFloat( self.dispStorableAir )
+		net.WriteFloat( self.dispCoolant )
+		net.WriteFloat( self.dispStorableCoolant )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
  

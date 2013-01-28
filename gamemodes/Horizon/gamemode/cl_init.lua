@@ -5,6 +5,23 @@ values.air = 0
 values.coolant = 0
 values.power = 0
 
+surface.CreateFont( "PixelFont", {
+	font 		= "04b03",
+	size 		= 8,
+	weight 		= 0,
+	blursize 	= 0,
+	scanlines 	= 0,
+	antialias 	= false,
+	underline 	= false,
+	italic 		= false,
+	strikeout 	= false,
+	symbol 		= false,
+	rotary 		= false,
+	shadow 		= false,
+	additive 	= false,
+	outline 	= false
+} )
+
 function GM:Initialize()
    surface.CreateFont( "PixelFont", {
 		font 		= "04b03",

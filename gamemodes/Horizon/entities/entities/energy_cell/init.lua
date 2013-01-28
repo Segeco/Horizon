@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netEnerCell" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -112,10 +113,12 @@ function ENT:reportResources( netID )
 end
 
 function ENT:devUpdate()
-	umsg.Start("energy_cell_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.totalEnergy )
-	umsg.End()
+	net.Start( "netEnerCell" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.energy )
+		net.WriteFloat( self.maxEnergy )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 

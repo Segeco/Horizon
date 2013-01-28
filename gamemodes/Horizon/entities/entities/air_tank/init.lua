@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netAirTank" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -17,9 +18,9 @@ end
 function ENT:Initialize()
  
 	self:SetModel( "models/air_tank.mdl" )
-	self:PhysicsInit( SOLID_VPHYSICS )      
-	self:SetMoveType( MOVETYPE_VPHYSICS )   
-	self:SetSolid( SOLID_VPHYSICS ) 
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	
 	self.linkable = true
 	self.connections = {}
@@ -122,10 +123,12 @@ function ENT:UpdateWireOutput()
 end
 
 function ENT:devUpdate()
-	umsg.Start("air_tank_umsg")
-	umsg.Entity( self )
-	umsg.Short( self.totalAir )
-	umsg.End()
+	net.Start( "netAirTank" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.Air )
+		net.WriteFloat( self.maxAir )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 

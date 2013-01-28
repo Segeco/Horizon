@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netMineralCrate" )
 
 util.PrecacheSound( "cavernrock.impacthard" )
 
@@ -83,12 +84,25 @@ end
 
 
 function ENT:devUpdate()
-	umsg.Start("crate_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.Morphite )
-	umsg.Short( self.Nocxium )
-	umsg.Short( self.Isogen )
-	umsg.End()
+	local Content = {
+		Morphite = {
+			amount = self.Morphite,
+			max = self.maxMorphite
+		},
+		Nocxium = {
+			amount = self.Nocxium,
+			max = self.maxNocxium
+		},
+		Isogen = {
+			amount = self.Isogen,
+			max = self.maxIsogen
+		}
+	}
+	net.Start( "netMineralCrate" )
+		net.WriteEntity( self )
+		net.WriteTable( Content )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 

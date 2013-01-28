@@ -8,6 +8,7 @@ util.PrecacheSound( "trainyard.train_idle" )
 util.PrecacheSound( "trainyard.train_brake" )
  
 include('shared.lua')
+util.AddNetworkString( "netMiningDrill" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -48,10 +49,6 @@ function ENT:SpawnChunk()
 		local phys = ent:GetPhysicsObject()
 		return ent
 	end
-	
-		
-	
-
 end
  
 function ENT:Initialize()
@@ -64,7 +61,8 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetUseType( ONOFF_USE )
 	
-	self.availableEnergy = 0	
+	self.availableEnergy = 0
+	self.storableEnergy = 0
 	self.linkable = true
 	self.connections = {}
 	self.networkID = nil	
@@ -219,6 +217,7 @@ function ENT:Think()
 		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
 			if res[1] == "energy" then			
 				self.availableEnergy = res[2]
+				self.storableEnergy = res[3]
 				energyFound = true
 			end
 		end
@@ -227,6 +226,7 @@ function ENT:Think()
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableEnergy = 0
+			self.storableEnergy = 0
 		end
 	
 	end
@@ -234,7 +234,8 @@ function ENT:Think()
 	-- if the entity is no longer part of a network, clear available resources
 	
 	if self.networkID == nil then	
-	self.availableEnergy = 0	
+		self.availableEnergy = 0
+		self.storableEnergy = 0
 	end
 
 	-- generate/consume resources if active
@@ -270,10 +271,13 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("gen_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.availableEnergy )
-	umsg.End()
+	net.Start( "netMiningDrill" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.availableEnergy )
+		net.WriteFloat( self.storableEnergy )
+		net.WriteBit( self.Active )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 function ENT:UpdateWireOutput()

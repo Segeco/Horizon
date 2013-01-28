@@ -7,6 +7,7 @@ util.PrecacheSound( "k_lab.ambient_powergenerators" )
 util.PrecacheSound( "ambient/machines/thumper_startup1.wav" )
  
 include('shared.lua')
+util.AddNetworkString( "netFusionReactor" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -29,7 +30,9 @@ function ENT:Initialize()
 	self:SetUseType( ONOFF_USE )
 	
 	self.availableHydrogen = 0
+	self.totalStorableHydro = 0
 	self.availableCoolant = 0
+	self.totalStorableCool = 0
 	
 	self.linkable = true
 	self.connections = {}
@@ -136,11 +139,13 @@ function ENT:Think()
 			
 			if res[1] == "hydrogen" then			
 				self.availableHydrogen = res[2]
+				self.totalStorableHydro = res[3]
 				hydrogenFound = true
 			end
 			
 			if res[1] == "coolant" then			
 				self.availableCoolant = res[2]
+				self.totalStorableCool = res[3]
 				coolantFound = true
 			end
 			
@@ -151,7 +156,9 @@ function ENT:Think()
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableHydrogen = 0
+			self.totalStorableHydro = 0
 			self.availableCoolant = 0
+			self.totalStorableCool = 0
 		end
 	
 	end
@@ -159,8 +166,10 @@ function ENT:Think()
 	-- if the entity is no longer part of a network, clear available resources
 	
 	if self.networkID == nil then	
-	self.availableHydrogen = 0
-	self.availableCoolant = 0
+		self.availableHydrogen = 0
+		self.totalStorableHydro = 0
+		self.availableCoolant = 0
+		self.totalStorableCool = 0
 	end
 
 	-- generate/consume resources if active
@@ -183,11 +192,15 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("reactor_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.availableHydrogen )
-	umsg.Short( self.availableCoolant )
-	umsg.End()
+	net.Start( "netFusionReactor" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.availableHydrogen )
+		net.WriteFloat( self.totalStorableHydro )
+		net.WriteFloat( self.availableCoolant )
+		net.WriteFloat( self.totalStorableCool )
+		-- net.WriteFloat( self.networkID )
+		net.WriteBit( self.Active )
+	net.Broadcast()
 end
 
 function ENT:UpdateWireOutput()

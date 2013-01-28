@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 
 include( 'shared.lua' )
+include( 'sv_resources.lua' )
 
 
 function GM:InitPostEntity()
@@ -188,10 +189,12 @@ end
 
 function GM:HurtPlayer( ply )
 
-	ply:SetHealth( ply:Health() - 20 )				
-	ply:EmitSound("buttons/combine_button3.wav")
-	if ply:Health() < 1 then ply:Kill() end
-
+	if ply:IsValid() then
+		ply:SetHealth( ply:Health() - 20 )				
+		ply:EmitSound("buttons/combine_button3.wav")
+		if ply:Health() < 1 then ply:Kill() end
+	end
+	
 end
 
 function GM:generateResource(netID, resName, amt)
@@ -698,60 +701,61 @@ function GM:Think()
 	
 		for _, ply in pairs( player.GetAll() ) do
 						
-						
-			if !ply.Habitable and ply:Alive() then			
+			if ply:IsValid() then
+				if !ply.Habitable and ply:Alive() then			
+					
+					if ply.suitAir > 0 then				
+					
+						ply.suitAir = ply.suitAir - 1
 				
-				if ply.suitAir > 0 then				
+					end
 				
-					ply.suitAir = ply.suitAir - 1
-			
-				end
-			
-				if ply.suitAir == 0 then
-			
-					killFlag = killFlag + 1
-			
-				end
-			
-			end
-		
-			if ply.Temp == "hot" and ply:Alive() then
-		
-				if ply.suitCoolant > 0 then
+					if ply.suitAir == 0 then
 				
-					ply.suitCoolant = ply.suitCoolant - 1
+						killFlag = killFlag + 1
+				
+					end
 				
 				end
 			
-				if ply.suitCoolant == 0 then
+				if ply.Temp == "hot" and ply:Alive() then
 			
-					killFlag = killFlag + 1
-			
-				end
-			
-			end
-		
-			if ply.Temp == "cold" and ply:Alive() then
-			
-				if ply.suitPower > 0 then
-			
-					ply.suitPower = ply.suitPower - 1
+					if ply.suitCoolant > 0 then
+					
+						ply.suitCoolant = ply.suitCoolant - 1
+					
+					end
+				
+					if ply.suitCoolant == 0 then
+				
+						killFlag = killFlag + 1
+				
+					end
 				
 				end
 			
-				if ply.suitPower == 0 then
-			
-					killFlag = killFlag + 1
-			
+				if ply.Temp == "cold" and ply:Alive() then
+				
+					if ply.suitPower > 0 then
+				
+						ply.suitPower = ply.suitPower - 1
+					
+					end
+				
+					if ply.suitPower == 0 then
+				
+						killFlag = killFlag + 1
+				
+					end
+				
 				end
 			
-			end
-		
-			if killFlag > 0 then
-		
-				self:HurtPlayer(ply)
-				killFlag = 0
-		
+				if killFlag > 0 then
+			
+					self:HurtPlayer(ply)
+					killFlag = 0
+			
+				end
 			end
 		
 		nextUpdateTime = CurTime() + 1

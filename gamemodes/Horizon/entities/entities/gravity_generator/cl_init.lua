@@ -1,5 +1,5 @@
 include('shared.lua')
- 
+
 function ENT:Draw( )
 
 	self:DrawModel();
@@ -7,24 +7,26 @@ function ENT:Draw( )
 
 end
 
-net.Receive( "netCoolantTank", function()
+net.Receive( "netGravGen", function()
 	local entity = net.ReadEntity()	
-	entity.dispCoolant = math.Round( net.ReadFloat() )
-	entity.dispMaxCoolant = math.Round( net.ReadFloat() )
+	entity.dispEnergy = math.Round( net.ReadFloat() )
+	entity.dispStorableEnergy = math.Round( net.ReadFloat() )
 	-- entity.networkID = net.ReadFloat()
+	entity.Active = net.ReadBit()
 end )
 
 function DrawInfo()
 	local tr = LocalPlayer():GetEyeTrace()
 	local ent = tr.Entity
 
-	if ent.dispCoolant == nil then ent.dispCoolant = 0 end
-	if ent.dispMaxCoolant == nil then ent.dispMaxCoolant = 0 end
+	if ent.dispEnergy == nil then ent.dispEnergy = 0 end
+	if ent.dispStorableEnergy == nil then ent.dispStorableEnergy = 0 end
 
 	if tr.Entity:IsValid() and tr.Entity:GetPos():Distance(LocalPlayer():GetPos()) < 150 then
-	 	if tr.Entity:GetClass() == "coolant_tank" then
+	 	if tr.Entity:GetClass() == "gravity_generator" then
 	 		local text = ent.PrintName .. 
-	 					 "\nCoolant: " .. commas( ent.dispCoolant ) .. "/" .. commas( ent.dispMaxCoolant )
+	 					 "\nStatus: " .. ActiveB2S(ent.Active) .. 
+	 					 "\nEnergy: " .. commas( ent.dispEnergy ) .. "/" .. commas( ent.dispStorableEnergy )
 
 	 		local yOffset = 0
 	 		local center = ent:LocalToWorld( ent:OBBCenter() + Vector(0, -0.5, yOffset) ):ToScreen()
@@ -35,8 +37,8 @@ function DrawInfo()
 
 	 		draw.RoundedBox( 4, center.x-(boxWide/2), center.y-3, boxWide, boxTall, Color( 0, 0, 0, 255 ) )
 	 		draw.RoundedBox( 4, (center.x-(boxWide/2))+1, (center.y-3)+1, boxWide-2, boxTall-2, Color( 75, 75, 75, 255 ) )
-	 		
-			surface.SetDrawColor(25, 25, 25, 220)
+
+	 		surface.SetDrawColor(25, 25, 25, 220)
 			surface.SetTexture(gradientUp)
 			surface.DrawTexturedRect(center.x-((boxWide/2)-1), center.y-3, boxWide-1, boxTall)
 
@@ -45,4 +47,4 @@ function DrawInfo()
 		end
 	end
 end
-hook.Add( "HUDPaint", "DrawInfoCoolantTank", DrawInfo )
+hook.Add( "HUDPaint", "DrawInfoGravGenerator", DrawInfo )

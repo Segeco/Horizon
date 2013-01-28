@@ -6,6 +6,7 @@ util.PrecacheSound( "npc/turret_floor/deploy.wav" )
 util.PrecacheSound( "npc/turret_floor/retract.wav" )
  
 include('shared.lua')
+util.AddNetworkString( "netRemoteSuitCharger" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -28,8 +29,11 @@ function ENT:Initialize()
 	self:SetUseType( ONOFF_USE )
 	
 	self.dispEnergy = 0
+	self.dispStorableEnergy = 0
 	self.dispAir = 0
+	self.dispStorableAir = 0
 	self.dispCoolant = 0
+	self.dispStorableCoolant = 0
 	
 	self.availEnergy = 0
 	
@@ -214,6 +218,7 @@ function ENT:Think()
 			if res[1] == "energy" then
 			
 				self.dispEnergy = res[2]
+				self.dispStorableEnergy = res[3]
 				energyFound = true
 		
 			end
@@ -221,6 +226,7 @@ function ENT:Think()
 			if res[1] == "air" then
 			
 				self.dispAir = res[2]
+				self.dispStorableAir = res[3]
 				airFound = true
 		
 			end
@@ -228,6 +234,7 @@ function ENT:Think()
 			if res[1] == "coolant" then
 			
 				self.dispCoolant = res[2]
+				self.dispStorableCoolant = res[3]
 				coolantFound = true
 		
 			end
@@ -236,24 +243,30 @@ function ENT:Think()
 		if energyFound == false then 
 			self.availableEnergy = 0
 			self.dispEnergy = 0
+			self.dispStorableEnergy = 0
 		end
 		
 		if airFound == false then 
 			self.availableAir = 0
 			self.dispAir = 0
+			self.dispStorableAir = 0
 		end
 		
 		if coolantFound == false then 
 			self.availableCoolant = 0
 			self.dispCoolant = 0
+			self.dispStorableCoolant = 0
 		end
 		
 	
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.dispEnergy = 0
+			self.dispStorableEnergy = 0
 			self.dispAir = 0
+			self.dispStorableAir = 0
 			self.dispCoolant = 0
+			self.dispStorableCoolant = 0
 		end
 	
 	end
@@ -261,9 +274,12 @@ function ENT:Think()
 	-- if the entity is no longer part of a network, clear available resources
 	
 	if self.networkID == nil then	
-	self.dispEnergy = 0
-	self.dispAir = 0
-	self.dispCoolant = 0	
+		self.dispEnergy = 0
+		self.dispStorableEnergy = 0
+		self.dispAir = 0
+		self.dispStorableAir = 0
+		self.dispCoolant = 0
+		self.dispStorableCoolant = 0
 	end
 
 	-- generate/consume resources if active- findPlayers() will call the required methods
@@ -280,16 +296,16 @@ function ENT:Think()
     
 end
 
-
-
-
-
 function ENT:devUpdate()
-	umsg.Start("remoteSuitcharger_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.dispEnergy )
-	umsg.Short( self.dispAir )
-	umsg.Short( self.dispCoolant )
-	umsg.End()
+	net.Start( "netRemoteSuitCharger" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.dispEnergy )
+		net.WriteFloat( self.dispStorableEnergy )
+		net.WriteFloat( self.dispAir )
+		net.WriteFloat( self.dispStorableAir )
+		net.WriteFloat( self.dispCoolant )
+		net.WriteFloat( self.dispStorableCoolant )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
  

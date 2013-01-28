@@ -8,6 +8,7 @@ util.PrecacheSound( "Airboat_engine_stop" )
 util.PrecacheSound( "apc_engine_start" )
  
 include('shared.lua')
+util.AddNetworkString( "netHydrogenCoolant" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -30,7 +31,9 @@ function ENT:Initialize()
 	self:SetUseType( ONOFF_USE )
 	
 	self.availableEnergy = 0
+	self.storableEnergy = 0
 	self.availableHydrogen = 0
+	self.storableHydrogen = 0
 	self.linkable = true
 	self.connections = {}
 	self.networkID = nil	
@@ -63,16 +66,15 @@ function ENT:resourceExchange()
 	GAMEMODE:consumeResource( self.networkID, "energy", ( self.energyRate * FrameTime() ) )
 	GAMEMODE:consumeResource( self.networkID, "hydrogen", ( self.hydrogenRate * FrameTime() ) )
 
-
 end
  
-
 function ENT:AcceptInput( name, activator, caller )
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then	
 	if self.Active == false and self.availableEnergy > self.energyRate then self:deviceTurnOn() return end
 	if self.Active == true then self:deviceTurnOff() return end		
 		
 	end
+
 end
 
 function ENT:deviceTurnOn()
@@ -80,7 +82,6 @@ function ENT:deviceTurnOn()
 	self.Entity:EmitSound( "Airboat_engine_idle" )
 	
 	self.Active = true
-
 
 end
 
@@ -92,10 +93,10 @@ function ENT:deviceTurnOff()
 	
 	self.Active = false
 		
-
 end
 
 function ENT:TriggerInput(iname, value)
+
     if (iname == "On") then
         if (value ~= 1) then
             self:deviceTurnOff()
@@ -103,11 +104,11 @@ function ENT:TriggerInput(iname, value)
             self:deviceTurnOn()
         end
     end
+
 end
 
    
 function ENT:Think()
-
 
 	-- Check to see if the device is part of a network
 	
@@ -134,13 +135,15 @@ function ENT:Think()
 	
 		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do
 			
-			if res[1] == "energy" then			
+			if res[1] == "energy" then
 				self.availableEnergy = res[2]
+				self.storableEnergy = res[3]
 				energyFound = true
 			end
 			
-			if res[1] == "hydrogen" then			
+			if res[1] == "hydrogen" then
 				self.availableHydrogen = res[2]
+				self.storableHydrogen = res[3]
 				hydrogenFound = true
 			end
 			
@@ -151,22 +154,23 @@ function ENT:Think()
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableEnergy = 0
+			self.storableEnergy = 0
 		end
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableHydrogen = 0
+			self.storableHydrogen = 0
 		end
 	
 	end
 	
 	-- if the entity is no longer part of a network, clear available resources
 	
-	if self.networkID == nil then	
-	self.availableEnergy = 0	
-	end
-	
-	if self.networkID == nil then	
-	self.availableHydrogen = 0	
+	if self.networkID == nil then
+		self.availableEnergy = 0
+		self.storableEnergy = 0
+		self.availableHydrogen = 0
+		self.storableHydrogen = 0
 	end
 
 	-- generate/consume resources if active
@@ -189,11 +193,15 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("hydrogen_coolant_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.availableEnergy )
-	umsg.Short( self.availableHydrogen )
-	umsg.End()
+	net.Start( "netHydrogenCoolant" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.availableEnergy )
+		net.WriteFloat( self.storableEnergy )
+		net.WriteFloat( self.availableHydrogen )
+		net.WriteFloat( self.storableHydrogen )
+		-- net.WriteFloat( self.networkID )
+		net.WriteBit( self.Active )
+	net.Broadcast()
 end
 
 function ENT:UpdateWireOutput()

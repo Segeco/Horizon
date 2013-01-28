@@ -73,6 +73,11 @@ function ENT:Initialize()
 	self.fusionReactor[2] = 100
 	self.fusionReactor[3] = 0
 	
+	self.gravityGenerator = {}
+	self.gravityGenerator[1] = 100
+	self.gravityGenerator[2] = 100
+	self.gravityGenerator[3] = 0
+	
 	
 	
 	--End item costs
@@ -343,7 +348,36 @@ function builditem(ply, cmd, args)
 					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
 				end			
 			
-			end			
+			end		
+			
+			--Gravity Generator--------------------------
+			
+			if args[1] == "Gravity Generator" then
+			
+				if ent.gravityGenerator[1] <= ent.availableMorphite then
+					
+					if ent.gravityGenerator[2] <= ent.availableNocxium then
+					
+						if ent.gravityGenerator[3] <= ent.availableIsogen then
+							
+							if ent.reqEnergy <= ent.availableEnergy then
+							
+								
+								ent:BeginReplication("gravity_generator", ent.gravityGenerator)
+							
+								else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Energy") return
+							end
+							
+							else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Isogen") return 
+						end
+					
+						else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Nocxium") return
+					end
+					
+					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
+				end			
+			
+			end		
 		-----------------------------------------------------------			
 		-----------------------------------------------------------
 			

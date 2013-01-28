@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netHydrogenTank" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -120,10 +121,12 @@ function ENT:reportResources( netID )
 end
 
 function ENT:devUpdate()
-	umsg.Start("hydrogen_tank_umsg")
-	umsg.Entity( self )
-	umsg.Short( self.totalHydrogen )
-	umsg.End()
+	net.Start( "netHydrogenTank" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.Hydrogen )
+		net.WriteFloat( self.maxHydrogen )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 

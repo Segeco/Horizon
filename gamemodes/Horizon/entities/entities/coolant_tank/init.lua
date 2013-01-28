@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netCoolantTank" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -120,10 +121,12 @@ function ENT:reportResources( netID )
 end
 
 function ENT:devUpdate()
-	umsg.Start("coolant_tank_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.totalCoolant )
-	umsg.End()
+	net.Start( "netCoolantTank" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.coolant )
+		net.WriteFloat( self.maxCoolant )
+		-- net.WriteFloat( self.networkID )
+	net.Broadcast()
 end
 
 

@@ -8,6 +8,7 @@ util.PrecacheSound( "Airboat_engine_stop" )
 util.PrecacheSound( "apc_engine_start" )
  
 include('shared.lua')
+util.AddNetworkString( "netAirComp" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -29,12 +30,13 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetUseType( SIMPLE_USE )
 	
-	self.availableEnergy = 0	
+	self.availableEnergy = 0
+	self.totalStorable = 0
 	self.linkable = true
 	self.connections = {}
 	self.networkID = nil	
 	self.Active = false
-	self.health = 1000
+	self.health = 500
 	
 	--Resource Rates
 	self.airRate = 15
@@ -53,6 +55,23 @@ function ENT:Initialize()
     
 end
 
+function ENT:OnTakeDamage(dmg)
+
+	-- self:TakePhysicsDamage(dmg); -- React physically when getting shot/blown
+ 
+	-- if(self.health <= 0) then return; end -- If the health-variable is already zero or below it - do nothing
+ 
+	-- self.health = self.health - dmg:GetDamage(); -- Reduce the amount of damage took from our health-variable
+ 
+	-- if(self.health <= 0) then -- If our health-variable is zero or below it
+	-- 	local effectdata = EffectData()
+	-- 	effectdata:SetOrigin( self:GetPos() )
+	-- 	util.Effect( "explosion", effectdata )
+	-- 	self:Remove(); -- Remove our entity
+	-- end
+
+end
+
 function ENT:resourceExchange()
 
 	-- use this function to place generate/consume resource function calls	
@@ -60,9 +79,7 @@ function ENT:resourceExchange()
 	GAMEMODE:generateResource( self.networkID, "air", ( self.airRate * FrameTime() ) )
 	GAMEMODE:consumeResource( self.networkID, "energy", ( self.energyRate * FrameTime() ) )
 
-
 end
- 
 
 function ENT:AcceptInput( name, activator, caller )
 	if name == "Use" and caller:IsPlayer() and caller:KeyDownLast(IN_USE) == false then	
@@ -144,6 +161,7 @@ function ENT:Think()
 			
 			if res[1] == "energy" then			
 				self.availableEnergy = res[2]
+				self.totalStorable = res[3]
 				energyFound = true
 			end
 			
@@ -153,6 +171,7 @@ function ENT:Think()
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableEnergy = 0
+			self.totalStorable = 0
 		end
 	
 	end
@@ -160,7 +179,8 @@ function ENT:Think()
 	-- if the entity is no longer part of a network, clear available resources
 	
 	if self.networkID == nil then	
-	self.availableEnergy = 0	
+		self.availableEnergy = 0
+		self.totalStorable = 0	
 	end
 
 	-- generate/consume resources if active
@@ -183,10 +203,13 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("gen_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.availableEnergy )
-	umsg.End()
+	net.Start( "netAirComp" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.availableEnergy )
+		net.WriteFloat( self.totalStorable )
+		-- net.WriteFloat( self.networkID )
+		net.WriteBit( self.Active )
+	net.Broadcast()
 end
  
 function ENT:UpdateWireOutput()

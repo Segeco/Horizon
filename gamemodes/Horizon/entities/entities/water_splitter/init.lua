@@ -7,6 +7,7 @@ util.PrecacheSound( "apc_engine_start" )
 util.PrecacheSound( "apc_engine_stop" )
  
 include('shared.lua')
+util.AddNetworkString( "netWaterSplit" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -29,7 +30,9 @@ function ENT:Initialize()
 	self:SetUseType( ONOFF_USE )
 	
 	self.availableEnergy = 0
+	self.storableEnergy = 0
 	self.availableWater = 0
+	self.storableWater = 0
 	self.linkable = true
 	self.connections = {}
 	self.networkID = nil	
@@ -141,11 +144,13 @@ function ENT:Think()
 			
 			if res[1] == "energy" then			
 				self.availableEnergy = res[2]
+				self.storableEnergy = res[3]
 				energyFound = true
 			end
 			
 			if res[1] == "water" then			
 				self.availableWater = res[2]
+				self.storableWater = res[3]
 				waterFound = true
 			end
 			
@@ -156,7 +161,9 @@ function ENT:Think()
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableEnergy = 0
+			self.storableEnergy = 0
 			self.availableWater = 0
+			self.storableWater = 0
 		end
 	
 	end
@@ -164,8 +171,10 @@ function ENT:Think()
 	-- if the entity is no longer part of a network, clear available resources
 	
 	if self.networkID == nil then	
-	self.availableEnergy = 0
-	self.availableWater = 0
+		self.availableEnergy = 0
+		self.storableEnergy = 0
+		self.availableWater = 0
+		self.storableWater = 0
 	end
 
 	-- generate/consume resources if active
@@ -188,11 +197,15 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("water_splitter_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.availableEnergy )
-	umsg.Short( self.availableWater )
-	umsg.End()
+	net.Start( "netWaterSplit" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.availableEnergy )
+		net.WriteFloat( self.storableEnergy )
+		net.WriteFloat( self.availableWater )
+		net.WriteFloat( self.storableWater )
+		-- net.WriteFloat( self.networkID )
+		net.WriteBit( self.Active )
+	net.Broadcast()
 end
 
 function ENT:UpdateWireOutput()

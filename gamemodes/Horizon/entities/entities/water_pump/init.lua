@@ -8,6 +8,7 @@ util.PrecacheSound( "Airboat_engine_stop" )
 util.PrecacheSound( "apc_engine_start" )
  
 include('shared.lua')
+util.AddNetworkString( "netWaterPump" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -29,7 +30,8 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetUseType( ONOFF_USE )
 	
-	self.availableEnergy = 0	
+	self.availableEnergy = 0
+	self.totalStorable = 0
 	self.linkable = true
 	self.connections = {}
 	self.networkID = nil	
@@ -138,6 +140,7 @@ function ENT:Think()
 			
 			if res[1] == "energy" then			
 				self.availableEnergy = res[2]
+				self.totalStorable = res[3]
 				energyFound = true
 			end
 			
@@ -147,6 +150,7 @@ function ENT:Think()
 		
 		if GAMEMODE.networks[self.networkID][1][1] == nil then
 			self.availableEnergy = 0
+			self.totalStorable = 0
 		end
 	
 	end
@@ -154,7 +158,8 @@ function ENT:Think()
 	-- if the entity is no longer part of a network, clear available resources
 	
 	if self.networkID == nil then	
-	self.availableEnergy = 0	
+		self.availableEnergy = 0
+		self.totalStorable = 0
 	end
 
 	-- generate/consume resources if active
@@ -177,10 +182,13 @@ function ENT:Think()
 end
 
 function ENT:devUpdate()
-	umsg.Start("water_pump_umsg")
-	umsg.Entity(self)
-	umsg.Short( self.availableEnergy )
-	umsg.End()
+	net.Start( "netWaterPump" )
+		net.WriteEntity( self )
+		net.WriteFloat( self.availableEnergy )
+		net.WriteFloat( self.totalStorable )
+		-- net.WriteFloat( self.networkID )
+		net.WriteBit( self.Active )
+	net.Broadcast()
 end
 
 function ENT:UpdateWireOutput()
