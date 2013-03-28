@@ -4,6 +4,8 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 include( 'sv_resources.lua' )
 
+//Cache Table
+local nextPlyUpdate = {}
 
 function GM:InitPostEntity()
 
@@ -18,6 +20,9 @@ function GM:InitPostEntity()
 
 end
 
+function GM:PlayerInitialSpawn( ply )
+	nextPlyUpdate[ply:UniqueID()] = CurTime() + 5// Wait 5 seconds before running ticks.
+end
 
 function GM:PlayerSpawn( ply )
 
@@ -667,7 +672,7 @@ end
 
 
 
-
+local nextUpdateTime = 0
 
 function GM:Think()
 	
@@ -694,76 +699,75 @@ function GM:Think()
 	end
 	
 	---------------------------------------------------
-	
-	
-	if CurTime() < (nextUpdateTime or 0) then return end
-		local killFlag = 0
-	
-		for _, ply in pairs( player.GetAll() ) do
-						
-			if ply:IsValid() then
-				if !ply.Habitable and ply:Alive() then			
-					
-					if ply.suitAir > 0 then				
-					
-						ply.suitAir = ply.suitAir - 1
-				
-					end
-				
-					if ply.suitAir == 0 then
-				
-						killFlag = killFlag + 1
-				
-					end
-				
-				end
-			
-				if ply.Temp == "hot" and ply:Alive() then
-			
-					if ply.suitCoolant > 0 then
-					
-						ply.suitCoolant = ply.suitCoolant - 1
-					
-					end
-				
-					if ply.suitCoolant == 0 then
-				
-						killFlag = killFlag + 1
-				
-					end
-				
-				end
-			
-				if ply.Temp == "cold" and ply:Alive() then
-				
-					if ply.suitPower > 0 then
-				
-						ply.suitPower = ply.suitPower - 1
-					
-					end
-				
-					if ply.suitPower == 0 then
-				
-						killFlag = killFlag + 1
-				
-					end
-				
-				end
-			
-				if killFlag > 0 then
-			
-					self:HurtPlayer(ply)
-					killFlag = 0
-			
-				end
-			end
-		
-		nextUpdateTime = CurTime() + 1
-		self:SuitUpdate(ply)		
-	
-	end
-	
 
+end
+
+
+function GM:PlayerTick( ply )
+	
+	if !ply:IsValid() then return end
+	local UID = ply:UniqueID()
+	
+	if CurTime() < (nextPlyUpdate[UID] or 0) then return end
+		local killFlag = 0
+						
+			if !ply.Habitable and ply:Alive() then			
+			
+				if ply.suitAir > 0 then				
+				
+					ply.suitAir = ply.suitAir - 1
+			
+				end
+				
+				if ply.suitAir == 0 then
+			
+					killFlag = killFlag + 1
+			
+				end
+				
+			end
+			
+			if ply.Temp == "hot" and ply:Alive() then
+		
+				if ply.suitCoolant > 0 then
+				
+					ply.suitCoolant = ply.suitCoolant - 1
+					
+				end
+				
+				if ply.suitCoolant == 0 then
+				
+					killFlag = killFlag + 1
+				
+				end
+				
+			end
+			
+			if ply.Temp == "cold" and ply:Alive() then
+			
+				if ply.suitPower > 0 then
+			
+					ply.suitPower = ply.suitPower - 1
+					
+				end
+				
+				if ply.suitPower == 0 then
+				
+					killFlag = killFlag + 1
+				
+				end
+				
+			end
+			
+			if killFlag > 0 then
+			
+				self:HurtPlayer(ply)
+				killFlag = 0
+			
+			end
+	
+	nextPlyUpdate[UID] = CurTime() + 1
+	self:SuitUpdate(ply)
 end
 
 --Debug functions
