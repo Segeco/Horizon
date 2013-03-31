@@ -23,7 +23,7 @@ function GM:InitPostEntity()
 end
 
 function GM:PlayerInitialSpawn( ply )
-	nextPlyUpdate[ply:UniqueID()] = CurTime() + 5// Wait 5 seconds before running ticks.
+	ply.HZN_ShouldDoSpawnImmune = true
 end
 
 function GM:PlayerSpawn( ply )
@@ -712,61 +712,78 @@ function GM:PlayerTick( ply )
 	
 	if CurTime() < (nextPlyUpdate[UID] or 0) then return end
 		local killFlag = 0
-						
-			if !ply.Habitable and ply:Alive() then			
-			
-				if ply.suitAir > 0 then				
-				
-					ply.suitAir = ply.suitAir - 1
-			
-				end
-				
-				if ply.suitAir == 0 then
-			
-					killFlag = killFlag + 1
-			
-				end
-				
-			end
-			
-			if ply.Temp == "hot" and ply:Alive() then
 		
-				if ply.suitCoolant > 0 then
+		
+		if !ply.Habitable and ply:Alive() then			
+			
+			if ply.suitAir > 0 then				
 				
-					ply.suitCoolant = ply.suitCoolant - 1
+				ply.suitAir = ply.suitAir - 1
+			
+			end
+				
+			if ply.suitAir == 0 then
+			
+				killFlag = killFlag + 1
+			
+			end
+				
+		end
+			
+		if ply.Temp == "hot" and ply:Alive() then
+		
+			if ply.suitCoolant > 0 then
+				
+				ply.suitCoolant = ply.suitCoolant - 1
 					
-				end
+			end
 				
-				if ply.suitCoolant == 0 then
+			if ply.suitCoolant == 0 then
 				
-					killFlag = killFlag + 1
-				
-				end
+				killFlag = killFlag + 1
 				
 			end
+				
+		end
 			
-			if ply.Temp == "cold" and ply:Alive() then
+		if ply.Temp == "cold" and ply:Alive() then
 			
-				if ply.suitPower > 0 then
+			if ply.suitPower > 0 then
 			
-					ply.suitPower = ply.suitPower - 1
+				ply.suitPower = ply.suitPower - 1
 					
-				end
+			end
 				
-				if ply.suitPower == 0 then
+			if ply.suitPower == 0 then
 				
-					killFlag = killFlag + 1
-				
-				end
+				killFlag = killFlag + 1
 				
 			end
-			
-			if killFlag > 0 then
-			
-				self:HurtPlayer(ply)
+				
+		end
+		
+		//Posistion starts at 0,0,0 so have to get pos here.
+		if ply.HZN_ShouldDoSpawnImmune then
+			ply.HZN_SpawnImmune = ply:GetPos()
+			ply.HZN_ShouldDoSpawnImmune = false
+			killFlag = 0
+		end
+		
+		//Spawn immunity until player moves.
+		if ply.HZN_SpawnImmune then
+			if ply:GetPos() != ply.HZN_SpawnImmune then
+				ply.HZN_SpawnImmune = false
+			else
 				killFlag = 0
-			
 			end
+		end
+		
+		if killFlag > 0 then
+			
+			self:HurtPlayer(ply)
+			killFlag = 0
+		
+		end
 	
 	nextPlyUpdate[UID] = CurTime() + 1
 	self:SuitUpdate(ply)
