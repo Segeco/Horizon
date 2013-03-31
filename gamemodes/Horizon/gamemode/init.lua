@@ -6,6 +6,7 @@ include( 'sv_resources.lua' )
 
 //Cache Table
 local nextPlyUpdate = {}
+local SunObj
 
 function GM:InitPostEntity()
 
@@ -17,7 +18,8 @@ function GM:InitPostEntity()
 		self:setDefaultEnv(ent)	
 	
 	end
-
+	
+	SunObj = ents.FindByClass("env_sun")[1]
 end
 
 function GM:PlayerInitialSpawn( ply )
@@ -768,6 +770,12 @@ function GM:PlayerTick( ply )
 	
 	nextPlyUpdate[UID] = CurTime() + 1
 	self:SuitUpdate(ply)
+end
+
+-- Faster than scrolling over entity table a bunch of times.
+-- Sun ent never changes so no need to update.
+function GM:GetSun()
+	return SunObj
 end
 
 --Debug functions

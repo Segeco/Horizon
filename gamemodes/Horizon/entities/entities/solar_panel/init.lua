@@ -52,7 +52,8 @@ function ENT:Think()
 		self:resourceExchange()		
 	end
 		
-	self.Entity:NextThink( CurTime() + 1 )
+	-- Use random number to avoid lag spikes with lots of solar panels.
+	self.Entity:NextThink( CurTime() + math.Rand( 0.8, 1.2 ) )
 	return true	
 	
     
@@ -62,12 +63,16 @@ function ENT:traceSun()
 
 	-- This device needs LOS to the sun to function. For this method to work, any map created will
 	-- need to have an env_sun entity present.
-
+	-- Use centre of world if sun not found.
 	
-	local sun = ents.FindByClass("env_sun")	
+	local sun = GAMEMODE:GetSun()
+	if sun then
+		local startPos = sun:GetPos()
+	else
+		local startPos = Vector(0, 0, 0)
+	end
 	
-	local startPos = self:GetPos()
-	local endPos = sun[1]:GetPos()	
+	local endPos = 	self:GetPos()
 	local tracedata = {}
 	tracedata.start = startPos
 	tracedata.endpos = endPos
@@ -79,7 +84,7 @@ function ENT:traceSun()
 	
 		local trResult = trace.Entity
 		
-		if trResult:GetClass() != "env_sun" then		
+		if trResult:GetClass() != "solar_panel" then		
 			return false
 		end			
 	
