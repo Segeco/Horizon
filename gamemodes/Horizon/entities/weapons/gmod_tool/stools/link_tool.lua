@@ -10,6 +10,7 @@ if ( CLIENT ) then
     language.Add( "Tool.link_tool.name", "Link Tool" );
     language.Add( "Tool.link_tool.desc", "Link Horizon Devices" );
 	language.Add( "Tool.link_tool.0", "Left click to link two devices. Reload to unlink device." );
+	language.Add( "Tool.link_tool.1", "Left click annother device to link them.")
 end
 
 //local cycleComplete = false
