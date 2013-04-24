@@ -183,7 +183,7 @@ function ENT:Think()
 	-- used for startup animation sequence
 	if self.activating == true then	
 	
-		if CurTime() >= (self.animTime + self.duration) then
+		if self.Active and (CurTime() >= (self.animTime + self.duration)) then
 			self:SwitchToActive()
 			self.activating = false
 		end			

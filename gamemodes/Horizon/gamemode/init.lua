@@ -4,6 +4,8 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 include( 'sv_resources.lua' )
 
+util.AddNetworkString('hznSuit')
+
 //Cache Table
 local nextPlyUpdate = {}
 local SunObj
@@ -46,11 +48,11 @@ function GM:PlayerSpawn( ply )
 end
 
 function GM:SuitUpdate( ply )
-	umsg.Start("LS_umsg", ply)
-		umsg.Short( ply.suitAir )
-		umsg.Short( ply.suitCoolant )
-		umsg.Short( ply.suitPower )		
-	umsg.End()
+	net.Start('hznSuit')
+		net.WriteUInt(ply.suitAir, 8)
+		net.WriteUInt(ply.suitCoolant, 8)
+		net.WriteUInt(ply.suitPower, 8)
+	net.Send(ply)
 end	
 
 

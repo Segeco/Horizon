@@ -58,32 +58,29 @@ function ENT:resourceExchange()
 
 
 end
- 
 
-
-
-local function deviceTurnOn(ply, ent)
+function ENT:deviceTurnOn()
 	
-	ent.Active = true
+	self.Active = true
 		
-	ent:EmitSound( "d3_citadel.weapon_zapper_beam_loop2" )
+	self:EmitSound( "d3_citadel.weapon_zapper_beam_loop2" )
 	
 end
 
-local function deviceTurnOff(ply, ent)
+function ENT:deviceTurnOff()
 	
-	ent.Active = false
+	self.Active = false
 
-	ent:StopSound( "d3_citadel.weapon_zapper_beam_loop2" )
+	self:StopSound( "d3_citadel.weapon_zapper_beam_loop2" )
 	
 end
 
 function ENT:TriggerInput(iname, value)
     if (iname == "On") then
         if (value ~= 1) then
-            deviceTurnOff( nil, self )
+            self:deviceTurnOff()
         else
-            deviceTurnOn( nil, self )
+            self:deviceTurnOn()
         end
     end
 end
@@ -95,13 +92,13 @@ function ENT:Think()
 	-- Check to see if the device is part of a network
 	
 	if self.networkID == nil and self.Active == true then
-		deviceTurnOff(nil, self)
+		self:deviceTurnOff()
 	end
 	
 	-- Check to see if the device has the required resources to function
 	
 	if self.availableEnergy < self.energyRate and self.Active == true then
-		deviceTurnOff(nil, self)
+		self:deviceTurnOff()
 	end	
 	
 	--If the entity is part of a network, find relevant available resources on said network
@@ -188,8 +185,15 @@ function ENT:devUpdate()
 	net.Broadcast()
 end
 
-numpad.Register( "lsr_active", deviceTurnOn ) 
-numpad.Register( "lsr_inactive", deviceTurnOff )
+numpad.Register( "lsr_active", function( pl, ent, onoff )
+	if ( !IsValid( ent) ) then return false end
+	
+	if onoff then
+		ent:deviceTurnOn()
+	else
+		ent:deviceTurnOff()
+	end
+end)
 
 function ENT:UpdateWireOutput()
 	local activity

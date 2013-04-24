@@ -1,9 +1,8 @@
-include( 'shared.lua' )
+include('shared.lua')
 
-values = {}
-values.air = 0
-values.coolant = 0
-values.power = 0
+local Air = Air or 0
+local Coolant = Coolant or 0
+local Power = Power or 0
 
 surface.CreateFont( "PixelFont", {
 	font 		= "04b03",
@@ -22,31 +21,18 @@ surface.CreateFont( "PixelFont", {
 	outline 	= false
 } )
 
-function GM:Initialize()
-   surface.CreateFont( "PixelFont", {
-		font 		= "04b03",
-		size 		= 8,
-		weight 		= 0,
-		blursize 	= 0,
-		scanlines 	= 0,
-		antialias 	= false,
-		underline 	= false,
-		italic 		= false,
-		strikeout 	= false,
-		symbol 		= false,
-		rotary 		= false,
-		shadow 		= false,
-		additive 	= false,
-		outline 	= false
-	} )
-end
+local hps = hps or 0
+local aps = aps or 0
+local as = as or 0
+local cs = cs or 0
+local ps = ps or 0
 
-local hps = 0
-local aps = 0
-local as = 0
-local cs = 0
-local ps = 0
-hook.Add("HUDPaint", "HZN_HUD", function()
+function GM:HUDPaint()
+	//Sandbox stuff.
+	if BaseClass then
+		BaseClass.HUDPaint(self)
+	end
+	
 	local ply = LocalPlayer()
 	local X = ScrW()
 	local Y = ScrH()
@@ -76,15 +62,15 @@ hook.Add("HUDPaint", "HZN_HUD", function()
 	draw.SimpleText( ply:Nick(), "DermaDefaultBold", 36, Y - 73, Color( 255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT)
 
 	-- Right corner
-	local power = math.Clamp(values.power, 0, 200)
+	local power = math.Clamp(Power, 0, 200)
     ps = math.Approach(ps, power, 50*FrameTime())
     local psequation = (212)*(ps/200)
 
-	local air = math.Clamp(values.air, 0, 200)
+	local air = math.Clamp(Air, 0, 200)
     as = math.Approach(as, air, 50*FrameTime())
     local asequation = (212)*(as/200)
 
-	local coolant = math.Clamp(values.coolant, 0, 200)
+	local coolant = math.Clamp(Coolant, 0, 200)
     cs = math.Approach(cs, coolant, 50*FrameTime())
     local csequation = (212)*(cs/200)
 
@@ -110,18 +96,23 @@ hook.Add("HUDPaint", "HZN_HUD", function()
 	draw.SimpleText( "Health", "PixelFont", 41, Y - 46, Color( 255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT)
 	draw.SimpleText( "Armor", "PixelFont", 41, Y - 23, Color( 255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT)
 
+end
+
+function GM:HUDShouldDraw(name)
+	if	name == 'CHudHealth' ||
+		name == 'CHudBattery' ||
+		name == 'CHudAmmo' ||
+		name == 'CHudSecondaryAmmo'
+	then
+		return false
+	end
+	
+	return true
+end
+
+net.Receive('hznSuit', function()
+	Air = net.ReadUInt(8)
+	Coolant = net.ReadUInt(8)
+	Power = net.ReadUInt(8)
 end)
 
-local function hidehud(name)
-	for k, v in pairs({"CHudHealth", "CHudBattery", "CHudAmmo", "CHudSecondaryAmmo"}) do
-		if name == v then return false end
-	end
-end
-hook.Add("HUDShouldDraw", "HideDefaultHUD", hidehud)
-
-function LS_umsg_hook( um )
-	values.air = um:ReadShort()
-	values.coolant = um:ReadShort()
-	values.power = um:ReadShort()	
-end
-usermessage.Hook("LS_umsg", LS_umsg_hook)
