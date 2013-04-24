@@ -1,5 +1,7 @@
 include('shared.lua')
 
+DEFINE_BASECLASS( "gamemode_sandbox" )
+
 local Air = Air or 0
 local Coolant = Coolant or 0
 local Power = Power or 0

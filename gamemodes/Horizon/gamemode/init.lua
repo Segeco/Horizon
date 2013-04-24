@@ -4,6 +4,8 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 include( 'sv_resources.lua' )
 
+DEFINE_BASECLASS( "gamemode_sandbox" )
+
 util.AddNetworkString('hznSuit')
 
 //Cache Table
