@@ -37,9 +37,6 @@ if ( not trace.HitPos ) then return false; end
 
 		laser:SetAngles( Ang );			
 		laser:Spawn();
-		
-		numpad.OnDown( ply, key, "lsr_active", laser );
-		numpad.OnUp( ply, key, "lsr_inactive", laser );
 	
 
 	local min = laser:OBBMins();
@@ -58,7 +55,10 @@ if ( not trace.HitPos ) then return false; end
 		undo.SetCustomUndoText("Undone Mining Laser")
 	undo.Finish();
 
-	ply:AddCleanup( "mining lasers", laser );
+	ply:AddCleanup( "mining lasers", laser )
+	
+	numpad.OnDown( ply, key, "lsr_active", laser, true )
+	numpad.OnUp( ply, key, "lsr_active", laser, false )
 
 	return true;
 end

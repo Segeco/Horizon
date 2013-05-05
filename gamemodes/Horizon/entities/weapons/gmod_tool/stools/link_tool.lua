@@ -10,136 +10,136 @@ if ( CLIENT ) then
     language.Add( "Tool.link_tool.name", "Link Tool" );
     language.Add( "Tool.link_tool.desc", "Link Horizon Devices" );
 	language.Add( "Tool.link_tool.0", "Left click to link two devices. Reload to unlink device." );
+	language.Add( "Tool.link_tool.1", "Left click annother device to link them.")
 end
 
-local timesFired = 0
-local cycleComplete = false
+//local cycleComplete = false
 
 function TOOL:Deploy()
-	timesFired = 0
-	cycleComplete = false
-	entA = nil
-	entb = nil
 	self:ClearObjects()
 end
 
 function TOOL:LeftClick( tr )
 
 	if (!tr.Entity:IsValid(tr.Entity.linkable)) or (tr.Entity:IsPlayer()) then return end
-	cycleHasrun = false	
+		
+		local timesFired = self:NumObjects()
 		
 		if (timesFired == 0) then
 		
-			entA = tr.Entity					
-			timesFired = 1
-					
-			if (CLIENT) then self:ClearObjects() return true end
-				
-		
+			entA = tr.Entity	
+			self:SetObject( timesFired + 1, tr.Entity, tr.HitPos, tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone ), tr.PhysicsBone, tr.HitNormal )
+			self:SetStage(1)
+			
+			return true
 		end
 		
 			
-
-				
+		local entA = self:GetEnt(1)
+		if !entA:IsValid() then self:ClearObjects() return false end
+		
 		if entA:GetPos():Distance( tr.Entity:GetPos() ) > 800 then
-		
-			timesFired = 0
-			cycleComplete = false
-			cycleHasrun = true
 			self:ClearObjects()
+			
+			if CLIENT then
+				notification.AddLegacy('Link is to long!', NOTIFY_ERROR, 6)
+				surface.PlaySound('buttons/button10.wav')
+			end
+			
 			return true
-		
 		end
 		
 		-------------- rope code---------
-		local iNum = self:NumObjects()
+		if SERVER then
+			
+			local Phys = tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone )
+			self:SetObject( timesFired + 1, tr.Entity, tr.HitPos, Phys, tr.PhysicsBone, tr.HitNormal )
 		
-		local Phys = tr.Entity:GetPhysicsObjectNum( tr.PhysicsBone )
-		self:SetObject( iNum + 1, tr.Entity, tr.HitPos, Phys, tr.PhysicsBone, tr.HitNormal )
+			if (timesFired > 0) then		
 		
-		if (iNum > 0) then		
-		
-                local forcelimit = 0
-                local addlength  = 100
-                local material   = self:GetClientInfo( "material" )
-                local width      = self:GetClientNumber( "width" ) or 1.5
-                local rigid      = false
-               
-                // Get information we're about to use
-                local Ent1,  Ent2  = self:GetEnt(1),     self:GetEnt(2)
-                local Bone1, Bone2 = self:GetBone(1),    self:GetBone(2)
-                local WPos1, WPos2 = self:GetPos(1),     self:GetPos(2)
-                local LPos1, LPos2 = self:GetLocalPos(1),self:GetLocalPos(2)
-                local length = ( WPos1 - WPos2):Length()
+					local forcelimit = 0
+					local addlength  = 100
+					local material   = self:GetClientInfo( "material" )
+					local width      = self:GetClientNumber( "width" ) or 1.5
+					local rigid      = false
 				
+					// Get information we're about to use
+					local Ent1,  Ent2  = self:GetEnt(1),     self:GetEnt(2)
+					local Bone1, Bone2 = self:GetBone(1),    self:GetBone(2)
+					local WPos1, WPos2 = self:GetPos(1),     self:GetPos(2)
+					local LPos1, LPos2 = self:GetLocalPos(1),self:GetLocalPos(2)
+					local length = ( WPos1 - WPos2):Length()
+					
+					
+					if Ent1 != Ent2 then
+						if ( Ent1.networkID != nil and Ent2.networkID != nil ) and ( Ent1.networkID == Ent2.networkID )  then
+						 self:ClearObjects()
+						 return true
+						end
+						
+						constraint.Rope( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, length, addlength, forcelimit, width, material, rigid )
+					end
+		
+			
+				if Ent1 == Ent2 then
 				
-				if Ent1 != Ent2 then
-					local constraint, rope = constraint.Rope( Ent1, Ent2, Bone1, Bone2, LPos1, LPos2, length, addlength, forcelimit, width, material, rigid )
+					self:ClearObjects()
+					return true
+			
 				end
-		
-			
-			if Ent1 == Ent2 then
-			
-				timesFired = 0
-				cycleComplete = false
-				cycleHasrun = true
-				self:ClearObjects()
-				return true
-			
-			end
 				
  	
+			end
 		end
 		
 		---------------------------------
 		
 		
 		if (tr.Entity != entA) then
-				
 			
-			if cycleComplete == false then
-				entB = tr.Entity
-				
-				if entA.connections == nil then return true end
-				if entB.connections == nil then return true end
-				
-				
-				if entA.networkID == nil and entB.networkID == nil then
+			local cycleComplete = false
+			
+			entB = tr.Entity
+			
+			if entA.connections == nil then return true end
+			if entB.connections == nil then return true end
+			
+			
+			if entA.networkID == nil and entB.networkID == nil then
 			
 									
-					entA.networkID = GAMEMODE.nextNet
-					table.insert(entA.connections, entB)
+				entA.networkID = GAMEMODE.nextNet
+				table.insert(entA.connections, entB)
 					
 			
-					entB.networkID = GAMEMODE.nextNet
-					table.insert(entB.connections, entA)	
+				entB.networkID = GAMEMODE.nextNet
+				table.insert(entB.connections, entA)	
 			
-					newNetwork = {}
-					newNetwork[1] = {}
-					newNetwork[2] = entA
-					newNetwork[3] = entB
-						
-					GAMEMODE.networks[GAMEMODE.nextNet] = newNetwork
+				newNetwork = {}
+				newNetwork[1] = {}
+				newNetwork[2] = entA
+				newNetwork[3] = entB
+					
+				GAMEMODE.networks[GAMEMODE.nextNet] = newNetwork
 			
 			
-					--Now, let's add any new resources to the network's resource list
-					for _, ent in pairs( newNetwork ) do
-						
-						if ent.deviceType == "storage" then
-							GAMEMODE:addToResourceList( ent )
-						end
+				--Now, let's add any new resources to the network's resource list
+				for _, ent in pairs( newNetwork ) do
+					
+					if ent.deviceType == "storage" then
+						GAMEMODE:addToResourceList( ent )
 					end
-			
-					--Next, we need to get a count of all resources on the network
-					GAMEMODE:updateResourceCount(GAMEMODE.nextNet)
-			
-					-- Increment to next available network ID
-					GAMEMODE.nextNet = GAMEMODE.nextNet + 1			
-					
-					cycleComplete = true;
 				end
+		
+				--Next, we need to get a count of all resources on the network
+				GAMEMODE:updateResourceCount(GAMEMODE.nextNet)
 			
+				-- Increment to next available network ID
+				GAMEMODE.nextNet = GAMEMODE.nextNet + 1			
+					
+				cycleComplete = true;
 			end
+			
 			
 			if entA.networkID != nil and entB.networkID == nil then
 			
@@ -257,13 +257,8 @@ function TOOL:LeftClick( tr )
 				end
 			end
 			
-									
-			timesFired = 0
-			cycleComplete = false
-			cycleHasrun = true
 			self:ClearObjects()
 			
-						
 		end
 		
 	
@@ -275,7 +270,9 @@ function TOOL:LeftClick( tr )
 end
 
 function TOOL:Reload( tr )
-
+	
+	self:ClearObjects()
+	
 	if tr.Entity.linkable == true then
 	
 		if tr.Entity.networkID != nil then

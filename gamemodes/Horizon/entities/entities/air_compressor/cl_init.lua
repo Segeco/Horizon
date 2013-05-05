@@ -3,8 +3,10 @@ include('shared.lua')
 function ENT:Draw( )
 
 	self:DrawModel();
-	Wire_Render(self.Entity)
-
+	
+	if WIRE_CLIENT_INSTALLED then
+		Wire_Render(self.Entity)
+	end
 end
 
 net.Receive( "netAirComp", function()

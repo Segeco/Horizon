@@ -4,6 +4,13 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 include( 'sv_resources.lua' )
 
+DEFINE_BASECLASS( "gamemode_sandbox" )
+
+util.AddNetworkString('hznSuit')
+
+//Cache Table
+local nextPlyUpdate = {}
+local SunObj
 
 function GM:InitPostEntity()
 
@@ -15,9 +22,13 @@ function GM:InitPostEntity()
 		self:setDefaultEnv(ent)	
 	
 	end
-
+	
+	SunObj = ents.FindByClass("env_sun")[1]
 end
 
+function GM:PlayerInitialSpawn( ply )
+	ply.HZN_ShouldDoSpawnImmune = true
+end
 
 function GM:PlayerSpawn( ply )
 
@@ -39,11 +50,11 @@ function GM:PlayerSpawn( ply )
 end
 
 function GM:SuitUpdate( ply )
-	umsg.Start("LS_umsg", ply)
-		umsg.Short( ply.suitAir )
-		umsg.Short( ply.suitCoolant )
-		umsg.Short( ply.suitPower )		
-	umsg.End()
+	net.Start('hznSuit')
+		net.WriteUInt(ply.suitAir, 8)
+		net.WriteUInt(ply.suitCoolant, 8)
+		net.WriteUInt(ply.suitPower, 8)
+	net.Send(ply)
 end	
 
 
@@ -667,7 +678,7 @@ end
 
 
 
-
+local nextUpdateTime = 0
 
 function GM:Think()
 	
@@ -694,76 +705,98 @@ function GM:Think()
 	end
 	
 	---------------------------------------------------
-	
-	
-	if CurTime() < (nextUpdateTime or 0) then return end
-		local killFlag = 0
-	
-		for _, ply in pairs( player.GetAll() ) do
-						
-			if ply:IsValid() then
-				if !ply.Habitable and ply:Alive() then			
-					
-					if ply.suitAir > 0 then				
-					
-						ply.suitAir = ply.suitAir - 1
-				
-					end
-				
-					if ply.suitAir == 0 then
-				
-						killFlag = killFlag + 1
-				
-					end
-				
-				end
-			
-				if ply.Temp == "hot" and ply:Alive() then
-			
-					if ply.suitCoolant > 0 then
-					
-						ply.suitCoolant = ply.suitCoolant - 1
-					
-					end
-				
-					if ply.suitCoolant == 0 then
-				
-						killFlag = killFlag + 1
-				
-					end
-				
-				end
-			
-				if ply.Temp == "cold" and ply:Alive() then
-				
-					if ply.suitPower > 0 then
-				
-						ply.suitPower = ply.suitPower - 1
-					
-					end
-				
-					if ply.suitPower == 0 then
-				
-						killFlag = killFlag + 1
-				
-					end
-				
-				end
-			
-				if killFlag > 0 then
-			
-					self:HurtPlayer(ply)
-					killFlag = 0
-			
-				end
-			end
-		
-		nextUpdateTime = CurTime() + 1
-		self:SuitUpdate(ply)		
-	
-	end
-	
 
+end
+
+
+function GM:PlayerTick( ply )
+	
+	if !ply:IsValid() then return end
+	local UID = ply:UniqueID()
+	
+	if CurTime() < (nextPlyUpdate[UID] or 0) then return end
+		local killFlag = 0
+		
+		
+		if !ply.Habitable and ply:Alive() then			
+			
+			if ply.suitAir > 0 then				
+				
+				ply.suitAir = ply.suitAir - 1
+			
+			end
+				
+			if ply.suitAir == 0 then
+			
+				killFlag = killFlag + 1
+			
+			end
+				
+		end
+			
+		if ply.Temp == "hot" and ply:Alive() then
+		
+			if ply.suitCoolant > 0 then
+				
+				ply.suitCoolant = ply.suitCoolant - 1
+					
+			end
+				
+			if ply.suitCoolant == 0 then
+				
+				killFlag = killFlag + 1
+				
+			end
+				
+		end
+			
+		if ply.Temp == "cold" and ply:Alive() then
+			
+			if ply.suitPower > 0 then
+			
+				ply.suitPower = ply.suitPower - 1
+					
+			end
+				
+			if ply.suitPower == 0 then
+				
+				killFlag = killFlag + 1
+				
+			end
+				
+		end
+		
+		//Posistion starts at 0,0,0 so have to get pos here.
+		if ply.HZN_ShouldDoSpawnImmune then
+			ply.HZN_SpawnImmune = ply:GetPos()
+			ply.HZN_ShouldDoSpawnImmune = false
+			killFlag = 0
+		end
+		
+		//Spawn immunity until player moves.
+		if ply.HZN_SpawnImmune then
+			if ply:GetPos() != ply.HZN_SpawnImmune then
+				ply.HZN_SpawnImmune = false
+			else
+				killFlag = 0
+			end
+		end
+		
+		if killFlag > 0 then
+			
+			self:HurtPlayer(ply)
+			killFlag = 0
+		
+		end
+	
+	nextPlyUpdate[UID] = CurTime() + 1
+	self:SuitUpdate(ply)
+end
+
+-- Faster than scrolling over entity table a bunch of times.
+-- Sun ent never changes so no need to update.
+function GM:GetSun()
+	return SunObj
 end
 
 --Debug functions
