@@ -18,7 +18,6 @@ net.Receive( "netRemoteSuitCharger", function()
 	entity.dispCoolant = math.Round( net.ReadFloat() )
 	entity.dispStorableCoolant = math.Round( net.ReadFloat() )
 	-- entity.networkID = net.ReadFloat()
-	entity.Active = net.ReadBit()
 end )
 
 function DrawInfo()

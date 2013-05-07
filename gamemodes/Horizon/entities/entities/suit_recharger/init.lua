@@ -3,7 +3,6 @@ AddCSLuaFile( "shared.lua" )
 util.PrecacheSound( "Airboat_engine_idle" )
  
 include('shared.lua')
-util.AddNetworkString( "netSuitRecharger" )
 
 function ENT:SpawnFunction( ply, tr )
 		

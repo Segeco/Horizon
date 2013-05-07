@@ -16,7 +16,6 @@ net.Receive( "netHydrogenCoolant", function()
 	entity.dispHydrogen = math.Round( net.ReadFloat() )
 	entity.dispStorableHydrogen = math.Round( net.ReadFloat() )
 	-- entity.networkID = net.ReadFloat()
-	entity.Active = net.ReadBit()
 end )
 
 function DrawInfo()

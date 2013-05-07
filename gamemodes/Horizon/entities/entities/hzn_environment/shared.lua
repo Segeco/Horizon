@@ -3,6 +3,7 @@ ENT.Base = "base_gmodentity"
  
 ENT.PrintName		= "Horizon hzn_environment"
 ENT.Author			= "Bynari"
+ENT.IsHZN = true
 
 //DeriveGamemode( "sandbox" )
 

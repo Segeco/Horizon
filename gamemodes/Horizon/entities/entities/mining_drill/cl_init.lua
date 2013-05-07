@@ -13,7 +13,6 @@ net.Receive( "netMiningDrill", function()
 	local entity = net.ReadEntity()	
 	entity.dispEnergy = math.Round( net.ReadFloat() )
 	entity.dispStorableEnergy = math.Round( net.ReadFloat() )
-	entity.Active = net.ReadBit()
 	-- entity.networkID = net.ReadFloat()
 end )
 

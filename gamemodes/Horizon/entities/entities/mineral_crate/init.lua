@@ -2,8 +2,6 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
-util.AddNetworkString( "netMineralCrate" )
-
 util.PrecacheSound( "cavernrock.impacthard" )
 
 function ENT:SpawnFunction( ply, tr )

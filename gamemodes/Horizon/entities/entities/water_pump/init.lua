@@ -8,7 +8,6 @@ util.PrecacheSound( "Airboat_engine_stop" )
 util.PrecacheSound( "apc_engine_start" )
  
 include('shared.lua')
-util.AddNetworkString( "netWaterPump" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -79,6 +78,7 @@ function ENT:deviceTurnOn()
 	self.Entity:EmitSound( "Airboat_engine_idle" )
 	
 	self.Active = true
+	self:SetState(true)
 	
 	local sequence = self:LookupSequence("active")
 	self:ResetSequence(sequence)	
@@ -92,6 +92,7 @@ function ENT:deviceTurnOff()
 	self.Entity:StopSound( "apc_engine_start" )
 	
 	self.Active = false
+	self:SetState(false)
 	
 	local sequence = self:LookupSequence("idle")
 	self:ResetSequence(sequence)	

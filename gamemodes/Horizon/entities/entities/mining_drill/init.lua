@@ -8,7 +8,6 @@ util.PrecacheSound( "trainyard.train_idle" )
 util.PrecacheSound( "trainyard.train_brake" )
  
 include('shared.lua')
-util.AddNetworkString( "netMiningDrill" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -115,7 +114,8 @@ function ENT:deviceTurnOn()
 	self.Entity:EmitSound( "trainyard.train_move" )
 	self.Entity:EmitSound( "trainyard.train_idle" )
 	
-	self.Active = true	
+	self.Active = true
+	self:SetState(true)
 	
 	local sequence = self:LookupSequence("start")
 	self.activating = true
@@ -132,6 +132,7 @@ function ENT:deviceTurnOff()
 	self.Entity:EmitSound( "trainyard.train_brake" )
 	
 	self.Active = false
+	self:SetState(false)
 	
 	local sequence = self:LookupSequence("stop")
 	self:ResetSequence(sequence)	
