@@ -16,7 +16,6 @@ net.Receive( "netWaterSplit", function()
 	entity.dispWater = math.Round( net.ReadFloat() )
 	entity.dispStorableWater = math.Round( net.ReadFloat() )
 	-- entity.networkID = net.ReadFloat()
-	entity.Active = net.ReadBit()
 end )
 
 function DrawInfo()

@@ -1,1 +1,1 @@
-ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Groundwater Extractor"ENT.Author			= "Bynari" 
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Groundwater Extractor"ENT.Author			= "Bynari"ENT.IsHZN = true 

@@ -1,1 +1,1 @@
-ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Gravity Generator"ENT.Author			= "LostInTheWired"ENT.AutomaticFrameAdvance = true  
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Gravity Generator"ENT.Author			= "LostInTheWired"ENT.AutomaticFrameAdvance = true ENT.IsHZN = true

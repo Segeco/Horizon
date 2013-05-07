@@ -1,1 +1,1 @@
-ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Ore Silo"ENT.Author			= "Bynari"ENT.Purpose			= "Ore Storage" 
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Ore Silo"ENT.Author			= "Bynari"ENT.Purpose			= "Ore Storage"ENT.IsHZN = true 

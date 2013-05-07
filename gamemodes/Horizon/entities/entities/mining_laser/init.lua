@@ -4,7 +4,6 @@ AddCSLuaFile( "shared.lua" )
 util.PrecacheSound( "d3_citadel.weapon_zapper_beam_loop2" )
  
 include('shared.lua')
-util.AddNetworkString( "netMiningLas" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -62,6 +61,7 @@ end
 function ENT:deviceTurnOn()
 	
 	self.Active = true
+	self:SetState(true)
 		
 	self:EmitSound( "d3_citadel.weapon_zapper_beam_loop2" )
 	
@@ -70,6 +70,7 @@ end
 function ENT:deviceTurnOff()
 	
 	self.Active = false
+	self:SetState(false)
 
 	self:StopSound( "d3_citadel.weapon_zapper_beam_loop2" )
 	

@@ -1,15 +1,14 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 
-include( 'shared.lua' )
-include( 'sv_resources.lua' )
+include('shared.lua')
+include('sv_resources.lua')
+include('sv_networking.lua')
 
 DEFINE_BASECLASS( "gamemode_sandbox" )
 
-util.AddNetworkString('hznSuit')
-
-//Cache Table
-local nextPlyUpdate = {}
+//Cache
+local nextPlyUpdate = 0
 local SunObj
 
 function GM:InitPostEntity()
@@ -44,19 +43,10 @@ function GM:PlayerSpawn( ply )
 	ply.suitPower = 0
 	ply.maxPower = 200
 	
-	self:SuitUpdate(ply)
+	ply:SuitUpdate()
 	
 	
 end
-
-function GM:SuitUpdate( ply )
-	net.Start('hznSuit')
-		net.WriteUInt(ply.suitAir, 8)
-		net.WriteUInt(ply.suitCoolant, 8)
-		net.WriteUInt(ply.suitPower, 8)
-	net.Send(ply)
-end	
-
 
 function GM:GetPlayerInfo(ply)
 
@@ -675,122 +665,132 @@ function GM:SpawnAsteroid()
 
 end
 
+//We are going to create a table of entitys spawned here to set the environments of them.
+//This is faster than scrolling over the whole entity table every tick. We only have what we need.
+//If we have a way to detect when a entitys physics object is created that would be a better method.
+local EntitysCreated = {}
 
-
-
-local nextUpdateTime = 0
-
-function GM:Think()
-	
-	for _, prop in pairs(ents.GetAll()) do
-	
-		if prop:GetClass() == "prop_physics" then
-			if prop.currentEnv == nil then
-				self:setDefaultEnv(prop)
-			end
-		end
-	
+function GM:OnEntityCreated(ent)
+	if IsValid(ent) and ent.currentEnv == nil then
+		table.insert(EntitysCreated, ent)
 	end
 	
+	self.BaseClass:OnEntityCreated(ent)
+end
+
+//We don't really need to update things faster than the tick rate here.
+function GM:Tick()
+	
+	//Cache
+	local CurrentTime = CurTime()
+	
+	//Go over entitys created and if they have no environment set then give them the default one.
+	for k,prop in pairs(EntitysCreated) do
+		if IsValid(prop) and prop.currentEnv == nil then
+			self:setDefaultEnv(prop)
+		end
+		
+		//Remove the entity from the table.
+		EntitysCreated[k] = nil
+	end
 	--Asteroid timer----------------------------------
 	
 	if asteroidInterval == nil then 
 		asteroidInterval = math.random(300, 500)
-		nextAsteroid = (CurTime() + asteroidInterval)
+		nextAsteroid = (CurrentTime + asteroidInterval)
 	end
 	
-	if CurTime() > nextAsteroid then 
+	if CurrentTime > nextAsteroid then 
 		self:SpawnAsteroid()
-		nextAsteroid = (CurTime() + asteroidInterval)
+		nextAsteroid = (CurrentTime + asteroidInterval)
 	end
 	
 	---------------------------------------------------
-
-end
-
-
-function GM:PlayerTick( ply )
 	
-	if !ply:IsValid() then return end
-	local UID = ply:UniqueID()
+	//Player code.
+	if CurrentTime < (nextPlyUpdate or 0) then return end
 	
-	if CurTime() < (nextPlyUpdate[UID] or 0) then return end
-		local killFlag = 0
+	for _,ply in pairs(player.GetAll()) do
+		if !ply:IsValid() then return end
+	
+			local killFlag = 0
 		
 		
-		if !ply.Habitable and ply:Alive() then			
+			if !ply.Habitable and ply:Alive() then			
 			
-			if ply.suitAir > 0 then				
+				if ply.suitAir > 0 then				
 				
-				ply.suitAir = ply.suitAir - 1
+					ply.suitAir = ply.suitAir - 1
 			
+				end
+				
+				if ply.suitAir == 0 then
+			
+					killFlag = killFlag + 1
+			
+				end
+				
 			end
-				
-			if ply.suitAir == 0 then
 			
-				killFlag = killFlag + 1
-			
-			end
-				
-		end
-			
-		if ply.Temp == "hot" and ply:Alive() then
+			if ply.Temp == "hot" and ply:Alive() then
 		
-			if ply.suitCoolant > 0 then
+				if ply.suitCoolant > 0 then
 				
-				ply.suitCoolant = ply.suitCoolant - 1
+					ply.suitCoolant = ply.suitCoolant - 1
 					
+				end
+				
+				if ply.suitCoolant == 0 then
+				
+					killFlag = killFlag + 1
+				
+				end
+				
 			end
-				
-			if ply.suitCoolant == 0 then
-				
-				killFlag = killFlag + 1
-				
-			end
-				
-		end
 			
-		if ply.Temp == "cold" and ply:Alive() then
+			if ply.Temp == "cold" and ply:Alive() then
 			
-			if ply.suitPower > 0 then
+				if ply.suitPower > 0 then
 			
-				ply.suitPower = ply.suitPower - 1
+					ply.suitPower = ply.suitPower - 1
 					
+				end
+				
+				if ply.suitPower == 0 then
+				
+					killFlag = killFlag + 1
+				
+				end
+				
 			end
-				
-			if ply.suitPower == 0 then
-				
-				killFlag = killFlag + 1
-				
-			end
-				
-		end
 		
-		//Posistion starts at 0,0,0 so have to get pos here.
-		if ply.HZN_ShouldDoSpawnImmune then
-			ply.HZN_SpawnImmune = ply:GetPos()
-			ply.HZN_ShouldDoSpawnImmune = false
-			killFlag = 0
-		end
-		
-		//Spawn immunity until player moves.
-		if ply.HZN_SpawnImmune then
-			if ply:GetPos() != ply.HZN_SpawnImmune then
-				ply.HZN_SpawnImmune = false
-			else
+			//Posistion starts at 0,0,0 so have to get pos here.
+			if ply.HZN_ShouldDoSpawnImmune then
+				ply.HZN_SpawnImmune = ply:GetPos()
+				ply.HZN_ShouldDoSpawnImmune = false
 				killFlag = 0
 			end
-		end
 		
-		if killFlag > 0 then
+		//Spawn immunity until player moves.
+			if ply.HZN_SpawnImmune then
+				if ply:GetPos() != ply.HZN_SpawnImmune then
+					ply.HZN_SpawnImmune = false
+				else
+					killFlag = 0
+				end
+			end
+		
+			if killFlag > 0 then
 			
-			self:HurtPlayer(ply)
-			killFlag = 0
+				self:HurtPlayer(ply)
+				killFlag = 0
 		
-		end
+			end
 	
-	nextPlyUpdate[UID] = CurTime() + 1
-	self:SuitUpdate(ply)
+		ply:SuitUpdate()
+	end
+	
+	nextPlyUpdate = CurrentTime + 1
 end
 
 -- Faster than scrolling over entity table a bunch of times.

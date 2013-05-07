@@ -7,7 +7,6 @@ util.PrecacheSound( "k_lab.ambient_powergenerators" )
 util.PrecacheSound( "ambient/machines/thumper_startup1.wav" )
  
 include('shared.lua')
-util.AddNetworkString( "netFusionReactor" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -84,6 +83,7 @@ function ENT:deviceTurnOn()
 	self.Entity:EmitSound( "ambient/machines/thumper_startup1.wav" )
 	
 	self.Active = true
+	self:SetState(true)
 		
 
 end
@@ -93,6 +93,7 @@ function ENT:deviceTurnOff()
 	self.Entity:StopSound( "k_lab.ambient_powergenerators" )
 	
 	self.Active = false
+	self:SetState(false)
 		
 
 end

@@ -118,3 +118,20 @@ net.Receive('hznSuit', function()
 	Power = net.ReadUInt(8)
 end)
 
+//A device is turned on or off.
+net.Receive('hznState', function()
+	local entity = net.ReadEntity()	
+	entity.Active = (net.ReadBit() == 1)
+end)
+
+
+//Get a state of a entity when we know about it if it was made more than a second ago.
+function GM:NetworkEntityCreated( ent )
+		if ( self:IsHznClass(ent:GetClass()) and ent:GetCreationTime() < (CurTime() - 1.0) ) then
+			net.Start('hznGetState')
+				net.WriteEntity(ent)
+			net.SendToServer()
+		end
+		
+		self.BaseClass:NetworkEntityCreated(ent)
+end

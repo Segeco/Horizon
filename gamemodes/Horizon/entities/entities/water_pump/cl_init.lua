@@ -14,7 +14,6 @@ net.Receive( "netWaterPump", function()
 	entity.dispEnergy = math.Round( net.ReadFloat() )
 	entity.dispStorableEnergy = math.Round( net.ReadFloat() )
 	-- entity.networkID = net.ReadFloat()
-	entity.Active = net.ReadBit()
 end )
 
 function DrawInfo()

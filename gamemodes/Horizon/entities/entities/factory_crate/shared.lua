@@ -1,1 +1,1 @@
-ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Factory Crate"ENT.Author			= "Bynari"ENT.Purpose			= "Horizon Production" 
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "Factory Crate"ENT.Author			= "Bynari"ENT.Purpose			= "Horizon Production"ENT.IsHZN = true 

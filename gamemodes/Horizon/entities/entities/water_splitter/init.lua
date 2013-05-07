@@ -7,7 +7,6 @@ util.PrecacheSound( "apc_engine_start" )
 util.PrecacheSound( "apc_engine_stop" )
  
 include('shared.lua')
-util.AddNetworkString( "netWaterSplit" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -84,6 +83,7 @@ function ENT:deviceTurnOn()
 	self.Entity:EmitSound( "apc_engine_start" )
 	
 	self.Active = true
+	self:SetState(true)
 	
 	local sequence = self:LookupSequence("active")
 	self:ResetSequence(sequence)	
@@ -96,6 +96,7 @@ function ENT:deviceTurnOff()
 	self.Entity:EmitSound( "apc_engine_stop" )
 	
 	self.Active = false
+	self:SetState(false)
 	
 	local sequence = self:LookupSequence("idle")
 	self:ResetSequence(sequence)	
