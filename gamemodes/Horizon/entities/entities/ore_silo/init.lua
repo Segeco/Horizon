@@ -85,6 +85,12 @@ function ENT:Think()
     
 end
 
+function ENT:GetTotalResource()
+
+	--Not used here, included for compatibility
+
+end
+
 function ENT:UpdateWireOutput()
 	local tankMorphite
 	local networkMorphite

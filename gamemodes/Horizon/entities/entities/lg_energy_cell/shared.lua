@@ -1,0 +1,1 @@
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "High Capacity Energy Cell"ENT.Author			= "Bynari"ENT.Purpose			= "Energy Storage" 

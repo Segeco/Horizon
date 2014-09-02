@@ -28,6 +28,7 @@ function ENT:Initialize()
 	self.maxWater = 1200
 	self.Water = 0
 	self.totalWater = self.Water
+	self.nwMaxWater = self.maxWater
 	self.resourcesUsed = {"water"}
 
         local phys = self:GetPhysicsObject()
@@ -51,16 +52,6 @@ function ENT:Think()
 	self:devUpdate()
 	self:trimResources()
 	
-	-- calculate the total water available on the network.
-	if self.networkID != nil then	
-		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
-			if res[1] == "water" then				
-				self.totalWater = res[2]			
-			end
-			
-		end
-	end
-	
 	-- Update the wire outputs, DUH!
 	if not (WireAddon == nil) then
         self:UpdateWireOutput()
@@ -70,6 +61,19 @@ function ENT:Think()
 		self:resetResources()
 	end
     
+end
+
+function ENT:GetTotalResource()
+-- calculate the total energy available on the network.
+	if self.networkID != nil then	
+	
+		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
+			if res[1] == "water" then				
+				self.totalWater = res[2]
+				self.nwMaxWater = res[3]
+			end			
+		end
+	end
 end
 
 function ENT:UpdateWireOutput()
@@ -93,16 +97,19 @@ end
 function ENT:resetResources()
 
 	self.totalWater = self.Water
+	self.nwMaxWater = self.maxWater
 
 end
 
-function ENT:updateResCount(resName, newAmt)
+function ENT:updateResCount(resName, newAmt, totalRes)
 
 	if resName == "water" then
 	
 		if self.Water <= self.maxWater then
 			self.Water = newAmt
 		end
+		
+		self.totalWater = totalRes
 	
 	end
 
@@ -123,8 +130,8 @@ end
 function ENT:devUpdate()
 	net.Start( "netWaterTank" )
 		net.WriteEntity( self )
-		net.WriteFloat( self.Water )
-		net.WriteFloat( self.maxWater )
+		net.WriteFloat( self.totalWater )
+		net.WriteFloat( self.nwMaxWater )
 		-- net.WriteFloat( self.networkID )
 	net.Broadcast()
 end

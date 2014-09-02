@@ -27,6 +27,7 @@ function ENT:Initialize()
 	self.deviceType = "storage"
 	self.maxAir = 1200
 	self.Air = 0
+	self.nwMaxAir = 0
 	self.venting = false
 	self.totalAir = self.Air
 	self.resourcesUsed = {"air"}
@@ -50,17 +51,6 @@ function ENT:Think()
 	self:devUpdate()
 	self:trimResources()
 	
-	
-	-- calculate the total air available on the network.
-	if self.networkID != nil then	
-		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
-			if res[1] == "air" then				
-				self.totalAir = res[2]			
-			end
-			
-		end
-	end
-	
 	-- Update the wire outputs, DUH!
 	if not (WireAddon == nil) then
         self:UpdateWireOutput()
@@ -82,16 +72,32 @@ end
 function ENT:resetResources()
 
 	self.totalAir = self.Air
+	self.nwMaxAir = self.maxAir
 
 end
 
-function ENT:updateResCount(resName, newAmt)
+function ENT:GetTotalResource()
+-- calculate the total energy available on the network.
+	if self.networkID != nil then	
+	
+		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
+			if res[1] == "air" then				
+				self.totalAir = res[2]
+				self.nwMaxAir = res[3]
+			end			
+		end
+	end
+end
+
+function ENT:updateResCount(resName, newAmt, totalRes)
 
 	if resName == "air" then
 	
 		if self.Air <= self.maxAir then
 			self.Air = newAmt
 		end
+		
+		self.totalAir = totalRes
 	
 	end
 
@@ -124,8 +130,8 @@ end
 function ENT:devUpdate()
 	net.Start( "netAirTank" )
 		net.WriteEntity( self )
-		net.WriteFloat( self.Air )
-		net.WriteFloat( self.maxAir )
+		net.WriteFloat( self.totalAir )
+		net.WriteFloat( self.nwMaxAir )
 		-- net.WriteFloat( self.networkID )
 	net.Broadcast()
 end

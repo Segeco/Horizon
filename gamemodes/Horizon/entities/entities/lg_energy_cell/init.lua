@@ -2,10 +2,11 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netLgEnerCell" )
 
 function ENT:SpawnFunction( ply, tr )
 		
-	local ent = ents.Create("energy_cell")
+	local ent = ents.Create("lg_energy_cell")
 	ent:SetPos( tr.HitPos + Vector(0, 0, 5))
 	ent:Spawn()
 	local phys = ent:GetPhysicsObject()
@@ -16,7 +17,7 @@ end
  
 function ENT:Initialize()
  
-	self:SetModel( "models/energy_cell.mdl" )
+	self:SetModel( "models/props_c17/substation_stripebox01a.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )      
 	self:SetMoveType( MOVETYPE_VPHYSICS )   
 	self:SetSolid( SOLID_VPHYSICS ) 
@@ -25,7 +26,7 @@ function ENT:Initialize()
 	self.connections = {}
 	self.networkID = nil
 	self.deviceType = "storage"
-	self.maxEnergy = 1200
+	self.maxEnergy = 50000
 	self.energy = 0
 	self.totalEnergy = self.energy
 	self.nwMaxEnergy = self.maxEnergy
@@ -45,10 +46,9 @@ end
 function ENT:Think()
 
 	-- update status balloon, and discard excess resources
-	
 	self:devUpdate()
-	self:trimResources()
-			
+	self:trimResources()	
+		
 	if self.networkID == nil then
 		self:resetResources()
 	end
@@ -89,6 +89,7 @@ function ENT:updateResCount(resName, newAmt, totalRes)
 		end
 		
 		self.totalEnergy = totalRes
+		
 	
 	end
 
@@ -120,7 +121,7 @@ function ENT:reportResources( netID )
 end
 
 function ENT:devUpdate()
-	net.Start( "netEnerCell" )
+	net.Start( "netLgEnerCell" )
 		net.WriteEntity( self )
 		net.WriteFloat( self.totalEnergy )
 		net.WriteFloat( self.nwMaxEnergy )

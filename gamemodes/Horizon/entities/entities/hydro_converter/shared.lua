@@ -1,0 +1,1 @@
+ENT.Type = "anim"ENT.Base = "horizon_base_ent" ENT.PrintName		= "HydroConverter"ENT.Author			= "Bynari"ENT.AutomaticFrameAdvance = true  

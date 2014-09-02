@@ -28,6 +28,7 @@ function ENT:Initialize()
 	self.maxHydrogen = 1200
 	self.Hydrogen = 0
 	self.totalHydrogen = self.Hydrogen
+	self.nwMaxHydrogen = self.maxHydrogen
 	self.resourcesUsed = {"hydrogen"}
 
         local phys = self:GetPhysicsObject()
@@ -49,17 +50,7 @@ function ENT:Think()
 	
 	self:devUpdate()
 	self:trimResources()
-	
-	-- calculate the total hydrogen available on the network.
-	if self.networkID != nil then	
-		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
-			if res[1] == "hydrogen" then				
-				self.totalHydrogen = res[2]			
-			end
-			
-		end
-	end
-	
+		
 	-- Update the wire outputs, DUH!
 	if not (WireAddon == nil) then
         self:UpdateWireOutput()
@@ -69,6 +60,19 @@ function ENT:Think()
 		self:resetResources()
 	end
     
+end
+
+function ENT:GetTotalResource()
+-- calculate the total energy available on the network.
+	if self.networkID != nil then	
+	
+		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
+			if res[1] == "hydrogen" then				
+				self.totalHydrogen = res[2]
+				self.nwMaxHydrogen = res[3]
+			end			
+		end
+	end
 end
 
 function ENT:UpdateWireOutput()
@@ -92,16 +96,19 @@ end
 function ENT:resetResources()
 
 	self.totalHydrogen = self.Hydrogen
+	self.nwMaxHydrogen = self.maxHydrogen
 
 end
 
-function ENT:updateResCount(resName, newAmt)
+function ENT:updateResCount(resName, newAmt, totalRes)
 
 	if resName == "hydrogen" then
 	
 		if self.Hydrogen <= self.maxHydrogen then
 			self.Hydrogen = newAmt
 		end
+		
+		self.totalHydrogen = totalRes
 	
 	end
 
@@ -113,7 +120,7 @@ function ENT:reportResources( netID )
 			
 		if res[1] == "hydrogen" then	
 			res[2] = res[2] + self.Hydrogen			
-			res[3] = res[3] + self.maxHydrogen			
+			res[3] = res[3] + self.maxHydrogen		
 		end
 	end
 
@@ -122,8 +129,8 @@ end
 function ENT:devUpdate()
 	net.Start( "netHydrogenTank" )
 		net.WriteEntity( self )
-		net.WriteFloat( self.Hydrogen )
-		net.WriteFloat( self.maxHydrogen )
+		net.WriteFloat( self.totalHydrogen )
+		net.WriteFloat( self.nwMaxHydrogen )
 		-- net.WriteFloat( self.networkID )
 	net.Broadcast()
 end

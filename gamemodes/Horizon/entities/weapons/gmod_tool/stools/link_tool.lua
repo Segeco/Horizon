@@ -133,6 +133,7 @@ function TOOL:LeftClick( tr )
 		
 				--Next, we need to get a count of all resources on the network
 				GAMEMODE:updateResourceCount(GAMEMODE.nextNet)
+				GAMEMODE:UpdateTotalResources(GAMEMODE.nextNet)
 			
 				-- Increment to next available network ID
 				GAMEMODE.nextNet = GAMEMODE.nextNet + 1			
@@ -158,6 +159,7 @@ function TOOL:LeftClick( tr )
 					end
 					
 					GAMEMODE:updateResourceCount( entA.networkID )
+					GAMEMODE:UpdateTotalResources(entA.networkID)
 					
 					cycleComplete = true
 				end
@@ -181,6 +183,7 @@ function TOOL:LeftClick( tr )
 					end
 					
 					GAMEMODE:updateResourceCount( entB.networkID )
+					GAMEMODE:UpdateTotalResources(entB.networkID)
 					
 					cycleComplete = true
 				end
@@ -250,6 +253,7 @@ function TOOL:LeftClick( tr )
 					end
 					
 					GAMEMODE:updateResourceCount( GAMEMODE.nextNet )
+					GAMEMODE:UpdateTotalResources(GAMEMODE.nextNet)
 					
 					GAMEMODE.nextNet = GAMEMODE.nextNet + 1
 										

@@ -28,6 +28,7 @@ function ENT:Initialize()
 	self.maxCoolant = 1200
 	self.coolant = 0
 	self.totalCoolant = self.coolant
+	self.nwMaxCoolant = self.maxCoolant
 	self.resourcesUsed = {"coolant"}				
 	
         local phys = self:GetPhysicsObject()
@@ -48,16 +49,7 @@ function ENT:Think()
 	
 	self:devUpdate()
 	self:trimResources()
-	
-	-- calculate the total coolant available on the network.
-	if self.networkID != nil then	
-		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do	
-			if res[1] == "coolant" then	
-				self.totalCoolant = res[2]			
-			end			
-		end
-	end
-	
+			
 	if self.networkID == nil then
 		self:resetResources()
 	end
@@ -69,6 +61,19 @@ function ENT:Think()
 	
 
     
+end
+
+function ENT:GetTotalResource()
+-- calculate the total energy available on the network.
+	if self.networkID != nil then	
+	
+		for _, res in pairs( GAMEMODE.networks[self.networkID][1] ) do			
+			if res[1] == "coolant" then				
+				self.totalCoolant = res[2]
+				self.nwMaxCoolant = res[3]
+			end			
+		end
+	end
 end
 
 function ENT:UpdateWireOutput()
@@ -92,16 +97,19 @@ end
 function ENT:resetResources()
 
 	self.totalCoolant = self.coolant
+	self.nwMaxCoolant = self.maxCoolant
 
 end
 
-function ENT:updateResCount(resName, newAmt)
+function ENT:updateResCount(resName, newAmt, totalRes)
 
 	if resName == "coolant" then
 	
 		if self.coolant <= self.maxCoolant then
 			self.coolant = newAmt
 		end
+		
+		self.totalCoolant = totalRes
 	
 	end
 
@@ -122,8 +130,8 @@ end
 function ENT:devUpdate()
 	net.Start( "netCoolantTank" )
 		net.WriteEntity( self )
-		net.WriteFloat( self.coolant )
-		net.WriteFloat( self.maxCoolant )
+		net.WriteFloat( self.totalCoolant )
+		net.WriteFloat( self.nwMaxCoolant )
 		-- net.WriteFloat( self.networkID )
 	net.Broadcast()
 end

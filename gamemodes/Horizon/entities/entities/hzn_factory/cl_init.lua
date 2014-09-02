@@ -122,6 +122,66 @@ function VGUI:Init()
 	gravityGenerator[12] = "[100] Nocxium"
 	gravityGenerator[13] = "[0] Isogen"
 	
+	isogenFuelCell = {}
+	isogenFuelCell[1] = "Isogen Fuel Cell"
+	isogenFuelCell[2] = "----------------------"
+	isogenFuelCell[3] = "Used to fuel Isogen Microreactors"
+	isogenFuelCell[4] = ""
+	isogenFuelCell[5] = ""
+	isogenFuelCell[6] = ""
+	isogenFuelCell[7] = ""
+	isogenFuelCell[8] = ""
+	isogenFuelCell[9] = "Required Resources"
+	isogenFuelCell[10] = ""
+	isogenFuelCell[11] = "[200] Morphite"
+	isogenFuelCell[12] = "[200] Nocxium"
+	isogenFuelCell[13] = "[100] Isogen"
+	
+	isogenReactor = {}
+	isogenReactor[1] = "Isogen Microreactor"
+	isogenReactor[2] = "----------------------"
+	isogenReactor[3] = "Generates large quantities of energy. Consumes"
+	isogenReactor[4] = "Isogen Fuel Cells"
+	isogenReactor[5] = ""
+	isogenReactor[6] = ""
+	isogenReactor[7] = "Produces ENERGY"
+	isogenReactor[8] = ""
+	isogenReactor[9] = "Required Resources"
+	isogenReactor[10] = ""
+	isogenReactor[11] = "[200] Morphite"
+	isogenReactor[12] = "[200] Nocxium"
+	isogenReactor[13] = "[100] Isogen"
+	
+	hydrogenRamscoop = {}
+	hydrogenRamscoop[1] = "Hydrogen Ramscoop"
+	hydrogenRamscoop[2] = "----------------------"
+	hydrogenRamscoop[3] = "When in motion collects hydrogen"
+	hydrogenRamscoop[4] = ""
+	hydrogenRamscoop[5] = ""
+	hydrogenRamscoop[6] = ""
+	hydrogenRamscoop[7] = "Produces HYDROGEN"
+	hydrogenRamscoop[8] = ""
+	hydrogenRamscoop[9] = "Required Resources"
+	hydrogenRamscoop[10] = ""
+	hydrogenRamscoop[11] = "[200] Morphite"
+	hydrogenRamscoop[12] = "[200] Nocxium"
+	hydrogenRamscoop[13] = "[100] Isogen"
+	
+	LgEnergyCell = {}
+	LgEnergyCell[1] = "High Cap Energy Cell"
+	LgEnergyCell[2] = "----------------------"
+	LgEnergyCell[3] = "Stores large quantities of energy"
+	LgEnergyCell[4] = ""
+	LgEnergyCell[5] = ""
+	LgEnergyCell[6] = ""
+	LgEnergyCell[7] = "Stores ENERGY"
+	LgEnergyCell[8] = ""
+	LgEnergyCell[9] = "Required Resources"
+	LgEnergyCell[10] = ""
+	LgEnergyCell[11] = "[200] Morphite"
+	LgEnergyCell[12] = "[200] Nocxium"
+	LgEnergyCell[13] = "[100] Isogen"
+	
 
 	local FactoryMenu = vgui.Create( "DFrame" )
 	FactoryMenu:SetPos( 50,50 )
@@ -147,6 +207,10 @@ function VGUI:Init()
 		schematicBox:AddLine("Remote Suitcharger")
 		schematicBox:AddLine("Fusion Reactor")
 		schematicBox:AddLine("Gravity Generator")
+		schematicBox:AddLine("Isogen Fuel Cell")
+		schematicBox:AddLine("Isogen Microreactor")
+		schematicBox:AddLine("Hydrogen Ramscoop")
+		schematicBox:AddLine("High Cap Energy Cell")
 	
 	-------------------
 		
@@ -196,6 +260,30 @@ function VGUI:Init()
 		if selectedValue == "Gravity Generator" then
 		
 			itemDesc = gravityGenerator
+		
+		end
+		
+		if selectedValue == "Isogen Fuel Cell" then
+		
+			itemDesc = isogenFuelCell
+		
+		end
+		
+		if selectedValue == "Isogen Microreactor" then
+		
+			itemDesc = isogenReactor
+		
+		end
+		
+		if selectedValue == "Hydrogen Ramscoop" then
+		
+			itemDesc = hydrogenRamscoop
+		
+		end
+		
+		if selectedValue == "High Cap Energy Cell" then
+		
+			itemDesc = LgEnergyCell
 		
 		end
 		

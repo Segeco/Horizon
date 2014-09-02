@@ -202,6 +202,7 @@ function GM:generateResource(netID, resName, amt)
 
 	local tankCount = 0
 	local newAmt = 0
+	local totalResource = 0
 	
 	--How many storage units are there on the network?
 
@@ -254,7 +255,8 @@ function GM:generateResource(netID, resName, amt)
 			
 				if res == resName then 
 				
-					ent:updateResCount(resName, newAmt)
+					totalResource = self:GetResourceTotal(netID, resName)
+					ent:updateResCount(resName, newAmt, totalResource)
 				
 				end
 			
@@ -269,10 +271,9 @@ end
 
 function GM:consumeResource(netID, resName, amt)
 
-	
-
 	local tankCount = 0
 	local newAmt = 0
+	local totalResource = 0
 	
 	--How many storage units are there on the network?
 
@@ -318,7 +319,8 @@ function GM:consumeResource(netID, resName, amt)
 			
 				if res == resName then 
 				
-					ent:updateResCount(resName, newAmt)
+					totalResource = self:GetResourceTotal(netID, resName)
+					ent:updateResCount(resName, newAmt, totalResource)
 				
 				end
 			
@@ -329,6 +331,39 @@ function GM:consumeResource(netID, resName, amt)
 	end
 
 
+end
+
+function GM:GetResourceTotal(netID, resName)
+
+	-- Gets the total amount available of a single resource on a network
+
+	local totalResource
+
+	for _, res in pairs (self.networks[netID][1]) do
+	
+		if res[1] == resName then
+		
+			totalResource = res[2]
+		
+		end
+	
+	end
+	
+	return totalResource
+
+end
+
+function GM:UpdateTotalResources(netID)
+
+for _, ent in pairs( self.networks[netID] ) do
+	
+		if ent.deviceType == "storage" then
+		
+			ent:GetTotalResource()
+		
+		end
+	
+	end
 end
 
 
@@ -570,6 +605,7 @@ function GM:unlinkDevice( device )
 		end
 		
 		self:updateResourceCount( self.nextNet )
+		self:UpdateTotalResources( self.nextNet )
 				
 		self.nextNet = self.nextNet + 1
 		

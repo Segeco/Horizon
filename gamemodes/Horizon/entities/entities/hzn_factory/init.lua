@@ -78,6 +78,26 @@ function ENT:Initialize()
 	self.gravityGenerator[2] = 100
 	self.gravityGenerator[3] = 0
 	
+	self.isogenFuelCell = {}
+	self.isogenFuelCell[1] = 200
+	self.isogenFuelCell[2] = 200
+	self.isogenFuelCell[3] = 100
+	
+	self.isogenReactor = {}
+	self.isogenReactor[1] = 200
+	self.isogenReactor[2] = 200
+	self.isogenReactor[3] = 100
+	
+	self.hydrogenRamscoop = {}
+	self.hydrogenRamscoop[1] = 200
+	self.hydrogenRamscoop[2] = 200
+	self.hydrogenRamscoop[3] = 100
+	
+	self.LgEnergyCell = {}
+	self.LgEnergyCell[1] = 200
+	self.LgEnergyCell[2] = 200
+	self.LgEnergyCell[3] = 100
+	
 	
 	
 	--End item costs
@@ -377,7 +397,123 @@ function builditem(ply, cmd, args)
 					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
 				end			
 			
-			end		
+			end	
+			
+			--Isogen Fuel Cell-----------------------------
+			
+			if args[1] == "Isogen Fuel Cell" then
+			
+				if ent.isogenFuelCell[1] <= ent.availableMorphite then
+					
+					if ent.isogenFuelCell[2] <= ent.availableNocxium then
+					
+						if ent.isogenFuelCell[3] <= ent.availableIsogen then
+							
+							if ent.reqEnergy <= ent.availableEnergy then
+							
+								
+								ent:BeginReplication("isogen_cell", ent.isogenFuelCell)
+							
+								else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Energy") return
+							end
+							
+							else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Isogen") return 
+						end
+					
+						else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Nocxium") return
+					end
+					
+					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
+				end			
+			
+			end	
+			
+			--Isogen Microreactor-----------------------------
+			
+			if args[1] == "Isogen Microreactor" then
+			
+				if ent.isogenReactor[1] <= ent.availableMorphite then
+					
+					if ent.isogenReactor[2] <= ent.availableNocxium then
+					
+						if ent.isogenReactor[3] <= ent.availableIsogen then
+							
+							if ent.reqEnergy <= ent.availableEnergy then
+							
+								
+								ent:BeginReplication("isogen_microreactor", ent.isogenReactor)
+							
+								else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Energy") return
+							end
+							
+							else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Isogen") return 
+						end
+					
+						else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Nocxium") return
+					end
+					
+					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
+				end			
+			
+			end	
+			
+			--Hydrogen Ramscoop-----------------------------
+			
+			if args[1] == "Hydrogen Ramscoop" then
+			
+				if ent.hydrogenRamscoop[1] <= ent.availableMorphite then
+					
+					if ent.hydrogenRamscoop[2] <= ent.availableNocxium then
+					
+						if ent.hydrogenRamscoop[3] <= ent.availableIsogen then
+							
+							if ent.reqEnergy <= ent.availableEnergy then
+							
+								
+								ent:BeginReplication("hydrogen_ramscoop", ent.hydrogenRamscoop)
+							
+								else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Energy") return
+							end
+							
+							else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Isogen") return 
+						end
+					
+						else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Nocxium") return
+					end
+					
+					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
+				end			
+			
+			end
+			
+			--High Capacity Energy Cell-----------------------------
+			
+			if args[1] == "High Cap Energy Cell" then
+			
+				if ent.LgEnergyCell[1] <= ent.availableMorphite then
+					
+					if ent.LgEnergyCell[2] <= ent.availableNocxium then
+					
+						if ent.LgEnergyCell[3] <= ent.availableIsogen then
+							
+							if ent.reqEnergy <= ent.availableEnergy then
+							
+								
+								ent:BeginReplication("lg_energy_cell", ent.LgEnergyCell)
+							
+								else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Energy") return
+							end
+							
+							else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Isogen") return 
+						end
+					
+						else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Nocxium") return
+					end
+					
+					else ply:PrintMessage(HUD_PRINTCENTER, "Insufficient Morphite") return
+				end			
+			
+			end	
 		-----------------------------------------------------------			
 		-----------------------------------------------------------
 			
