@@ -45,4 +45,4 @@ function DrawInfo()
 		end
 	end
 end
-hook.Add( "HUDPaint", "DrawInfoEnergyCell", DrawInfo )
+hook.Add( "HUDPaint", "DrawInfoLgEnergyCell", DrawInfo )

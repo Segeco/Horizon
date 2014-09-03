@@ -76,6 +76,16 @@ function ENT:deviceTurnOff()
 	
 end
 
+function ENT:OnRemove()
+
+	if self.Active then
+	
+		self:StopSound( "d3_citadel.weapon_zapper_beam_loop2" )
+	
+	end
+
+end
+
 function ENT:TriggerInput(iname, value)
     if (iname == "On") then
         if (value ~= 1) then

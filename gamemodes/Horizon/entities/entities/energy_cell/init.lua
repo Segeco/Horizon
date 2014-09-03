@@ -2,6 +2,7 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
  
 include('shared.lua')
+util.AddNetworkString( "netLgEnerCell" )
 
 function ENT:SpawnFunction( ply, tr )
 		
@@ -45,10 +46,9 @@ end
 function ENT:Think()
 
 	-- update status balloon, and discard excess resources
-	
 	self:devUpdate()
-	self:trimResources()
-			
+	self:trimResources()	
+		
 	if self.networkID == nil then
 		self:resetResources()
 	end
@@ -89,6 +89,7 @@ function ENT:updateResCount(resName, newAmt, totalRes)
 		end
 		
 		self.totalEnergy = totalRes
+		
 	
 	end
 

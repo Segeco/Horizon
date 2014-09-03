@@ -3,10 +3,8 @@ include('shared.lua')
 function ENT:Draw( )
 
 	self:DrawModel();
-	
-	if WIRE_CLIENT_INSTALLED then
-		Wire_Render(self.Entity)
-	end
+	Wire_Render(self.Entity)
+
 end
 
 net.Receive( "netEnerCell", function()
